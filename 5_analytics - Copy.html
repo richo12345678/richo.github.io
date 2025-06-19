@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wolves U14 Girls Stats - Analytics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      padding: 10px;
+      margin: 0 auto;
+      max-width: 100%;
+      background-color: #164835;
+      color: white;
+      -webkit-font-smoothing: antialiased;
+    }
+    .header { 
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 15px;
+      color: white;
+      padding-left: 10px;
+      position: relative;
+    }
+    .header-content {
+      text-align: left;
+    }
+    .logo {
+      height: 60px;
+      width: auto;
+    }
+    h2 { 
+      font-size: 22px;
+      margin-bottom: 5px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+    h3 {
+      font-size: 16px;
+      margin-top: 0;
+      font-weight: 400;
+      opacity: 0.9;
+    }
+    .boxscore-container {
+      background-color: white;
+      border-radius: 8px;
+      padding: 15px 10px;
+      margin: 20px auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      color: #333;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      max-width: 100%;
+    }
+    
+    .stats-table {
+      width: auto;
+      min-width: 700px;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    
+    .stats-table th {
+      background-color: #164835;
+      color: white;
+      padding: 8px 12px;
+      text-align: center;
+      font-weight: 500;
+      cursor: pointer;
+      position: relative;
+      user-select: none;
+      white-space: nowrap;
+    }
+    
+    .stats-table th:hover {
+      background-color: #0f3a2a;
+    }
+    
+    .stats-table th.sort-asc::after,
+    .stats-table th.sort-desc::after {
+      content: '';
+      display: inline-block;
+      margin-left: 5px;
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+    }
+    
+    .stats-table th.sort-asc::after {
+      border-bottom: 5px solid white;
+    }
+    
+    .stats-table th.sort-desc::after {
+      border-top: 5px solid white;
+    }
+    
+    .stats-table td {
+      padding: 8px 12px;
+      text-align: center;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .stats-table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    
+    .player-name {
+      text-align: left !important;
+      font-weight: 500;
+      min-width: 130px;
+      white-space: nowrap;
+      padding-left: 8px;
+    }
+    
+    .player-number {
+      text-align: center;
+      font-weight: 500;
+      width: 40px;
+    }
+    
+    .stats-table tr.selected {
+      background-color: #26a69a !important;
+      color: white;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+    
+    .definitions-container {
+      background-color: white;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 20px 0;
+      width: 100%;
+      box-sizing: border-box;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      color: #333;
+    }
+    
+    .definitions-container h3 {
+      color: #164835;
+      font-weight: 600;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    
+    .definitions-list {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .definitions-list li {
+      padding: 8px 0;
+      font-size: 14px;
+      break-inside: avoid;
+    }
+    
+    .definition-title {
+      font-weight: 600;
+      color: #164835;
+      display: block;
+      margin-bottom: 5px;
+    }
+    
+    .metric-symbols {
+      display: inline-flex;
+      gap: 5px;
+      margin-left: 8px;
+    }
+    
+    .efficiency-symbol {
+      color: #d6336c; /* Red */
+    }
+    
+    .output-symbol {
+      color: #6f42c1; /* Purple */
+    }
+    
+    .definition-formula {
+      font-family: 'Courier New', monospace;
+      background-color: #f0f9f8;
+      color: #26a69a;
+      padding: 3px 5px;
+      border-radius: 3px;
+      display: block;
+      margin: 5px 0;
+      font-size: 11px;
+      white-space: pre-wrap;
+      border-left: 3px solid #26a69a;
+    }
+    
+    .definition-note {
+      font-style: italic;
+      font-size: 11px;
+      color: #666;
+      display: block;
+      margin-top: 3px;
+    }
+    
+    .metric-key {
+      margin-top: 15px;
+      padding-top: 10px;
+      border-top: 1px solid #eee;
+      font-size: 12px;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    
+    .key-item {
+      display: flex;
+      align-items: center;
+    }
+    
+    .nav-menu {
+      position: relative;
+      display: inline-block;
+      z-index: 100;
+    }
+    
+    .menu-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 8px 15px;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+    
+    .menu-btn:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .menu-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      background-color: white;
+      min-width: 200px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      border-radius: 8px;
+      overflow: hidden;
+      z-index: 1;
+    }
+    
+    .menu-content.show {
+      display: block;
+    }
+    
+    .menu-item {
+      color: #333;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+      text-align: left;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background-color 0.2s;
+    }
+    
+    .menu-item:hover {
+      background-color: #f5f5f5;
+    }
+    
+    .current-page {
+      background-color: #164835;
+      color: white;
+    }
+    
+    .current-page:hover {
+      background-color: #0f3a2a;
+    }
+    
+    .header-group {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .median-row {
+      font-weight: 600;
+      background-color: #e6f2ed !important;
+    }
+  </style>
+</head>
+<body>
+<div class="header">
+  <div class="header-group">
+    <img src="https://sbl.asn.au/wp-content/uploads/sites/2/2020/07/JoondalupWolves-Primary-Logo.png" alt="Wolves Logo" class="logo">
+    <div class="header-content">
+      <h2>2025 Player Analytics</h2>
+      <h3>Wolves U14 Girls (Team 3)</h3>
+    </div>
+  </div>
+  
+  <div class="nav-menu">
+    <button class="menu-btn" id="menuToggle">☰</button>
+    <div class="menu-content" id="menuContent">
+      <a href="#" class="menu-item">Roster</a>
+      <a href="#" class="menu-item">Boxscores</a>
+      <a href="#" class="menu-item">Averages (Table)</a>
+      <a href="#" class="menu-item">Averages (Radar)</a>
+      <a href="#" class="menu-item current-page">Analytics</a>
+    </div>
+  </div>
+</div>
+
+<div class="boxscore-container">
+  <div id="analyticsTable">
+    <div class="loading">Loading player analytics...</div>
+  </div>
+</div>
+
+<div class="definitions-container">
+  <h3>Definitions</h3>
+  <ul class="definitions-list" id="definitionsList">
+    <li>
+      <span class="definition-title">
+        PER – Player Efficiency Rating
+        <span class="metric-symbols">
+          <span class="efficiency-symbol">★</span>
+          <span class="output-symbol">★</span>
+        </span>
+      </span>
+      <span>A composite stat estimating a player's overall game impact. It includes positive contributions (points, rebounds, assists, steals, blocks), lightly deducts negative plays (turnovers and fouls), and adds a shooting bonus for players who shoot more efficiently than the team average.</span>
+      <span class="definition-formula">PER = PTS + REB + AST + STL + BLK + ((FG% - Team FG%)/(Team FG%)) 
+          + ((FT% - Team FT%)/(Team FT%)) – (0.2 × FOULS) – (0.3 × TOs)</span>
+    </li>
+    <li>
+      <span class="definition-title">
+        TS% – True Shooting Percentage
+        <span class="metric-symbols">
+          <span class="efficiency-symbol">★</span>
+        </span>
+      </span>
+      <span>A smart shooting stat that includes regular shots, 3-pointers, and free throws to tell how efficient a player is at scoring. Shows how well someone turns shots into points.</span>
+      <span class="definition-formula">TS% = Points / (2 × (Field Goal Attempts + (0.44 × Field Throw Attempts)))</span>
+      <span class="definition-note">Note: In a game, a player may shoot 1, 2, or even 3 free throws depending on the situation. The number 0.44 is a standard factor used in basketball analytics to estimate the number of possessions used on free throws.</span>
+    </li>
+    <li>
+      <span class="definition-title">
+        PPS – Points Per Shot
+        <span class="metric-symbols">
+          <span class="efficiency-symbol">★</span>
+        </span>
+      </span>
+      <span>Tells how many points a player scores each time they shoot. It doesn't matter how many shots you take — just how effective each one is (a PPS of 1.0 means they score 1 point per shot).</span>
+      <span class="definition-formula">PPS = Points / Field Goal Attempts</span>
+    </li>
+    <li>
+      <span class="definition-title">
+        A/T – Assist-to-Turnover Ratio
+        <span class="metric-symbols">
+          <span class="efficiency-symbol">★</span>
+        </span>
+      </span>
+      <span>A metric for playmaking that compares how many assists a player makes versus how many times they lose the ball. Higher is better (an A/T-ratio of 1.0 means you make 1 assist for every turnover).</span>
+      <span class="definition-formula">A/T = Assists / Turnovers</span>
+    </li>
+    <li>
+      <span class="definition-title">
+        OFF% – Offence Percentage
+        <span class="metric-symbols">
+          <span class="output-symbol">★</span>
+        </span>
+      </span>
+      <span>An offensive impact stat that shows how involved a player is in offensive plays (an OFF% of 10% means you're involved in 10% of team's offence).</span>
+      <span class="definition-formula">OFF% = (Points + Offensive Rebounds + Assists) 
+          / (Team Points + Team Offensive Rebounds + Team Assists)</span>
+      <span class="definition-note">Note: Uses averages, not totals, to account for games played.</span>
+    </li>
+    <li>
+      <span class="definition-title">
+        DEF% – Defence Percentage
+        <span class="metric-symbols">
+          <span class="output-symbol">★</span>
+        </span>
+      </span>
+      <span>A defensive impact stat that shows how involved a player is in defensive plays (an DEF% of 10% means you're involved in 10% of team's defence).</span>
+      <span class="definition-formula">DEF% = (Defensive Rebounds + Steals + Blocks) 
+          / (Team Rebounds + Team Steals + Team Blocks)</span>
+      <span class="definition-note">Note: Uses averages, not totals, to account for games played.</span>
+    </li>
+  </ul>
+  
+  <div class="metric-key">
+    <div class="key-item">
+      <span class="efficiency-symbol">★</span>
+      <span>Efficiency metric</span>
+    </div>
+    <div class="key-item">
+      <span class="output-symbol">★</span>
+      <span>Output metric</span>
+    </div>
+  </div>
+</div>
+
+<script>
+// CSV data URL
+const analyticsCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=711431833&single=true&output=csv";
+
+// Format number with 1 decimal place
+function formatDecimal(num) {
+  return num % 1 === 0 ? num.toFixed(1) : num.toFixed(1);
+}
+
+// Format percentage with special handling for zero attempts
+function formatPercentage(num) {
+  if (isNaN(num)) return "0%";
+  const pct = num * 100;
+  return pct % 1 === 0 ? pct.toFixed(0) + "%" : pct.toFixed(1) + "%";
+}
+
+// Calculate median of an array
+function calculateMedian(values) {
+  if (values.length === 0) return 0;
+  
+  values.sort((a, b) => a - b);
+  
+  const half = Math.floor(values.length / 2);
+  
+  if (values.length % 2) {
+    return values[half];
+  }
+  
+  return (values[half - 1] + values[half]) / 2;
+}
+
+// Fetch and parse CSV data
+async function fetchAnalyticsData() {
+  try {
+    const response = await fetch(analyticsCsvUrl);
+    const csvText = await response.text();
+    const rows = csvText.split('\n').map(row => row.split(','));
+    
+    // Player data mapping - using row numbers from your specification
+    const playerRows = [
+      { name: "Piper", row: 31 },  // Row 32 in spreadsheet (0-based index 31)
+      { name: "Eden", row: 32 },
+      { name: "Ella", row: 33 },
+      { name: "Makayla", row: 34 },
+      { name: "Isla", row: 35 },
+      { name: "Madyson", row: 36 },
+      { name: "Eva", row: 37 },
+      { name: "Miyavi", row: 38 },
+      { name: "Aeris", row: 39 },
+      { name: "Sophie", row: 40 }
+    ];
+    
+    const players = [];
+    for (const player of playerRows) {
+      const row = rows[player.row];
+      if (!row || row.length < 8) continue;
+      
+      players.push({
+        number: row[0] || "",  // Column A
+        name: row[1] || "",    // Column B
+        per: parseFloat(row[2]) || 0,  // Column C (PER)
+        tsPct: (parseFloat(row[3]) || 0) / 100,  // Column D (TS%) - divided by 100
+        pps: parseFloat(row[4]) || 0,  // Column E (PPS)
+        atRatio: parseFloat(row[5]) || 0,  // Column F (A/T)
+        offPct: (parseFloat(row[6]) || 0) / 100,  // Column G (OFF%) - divided by 100
+        defPct: (parseFloat(row[7]) || 0) / 100   // Column H (DEF%) - divided by 100
+      });
+    }
+    
+    return players;
+  } catch (error) {
+    console.error("Error fetching analytics data:", error);
+    return [];
+  }
+}
+
+// Calculate team medians
+function calculateTeamMedians(players) {
+  // Extract all values for each metric
+  const pers = players.map(p => p.per);
+  const tsPcts = players.map(p => p.tsPct);
+  const ppsValues = players.map(p => p.pps);
+  const atRatios = players.map(p => p.atRatio);
+  const offPcts = players.map(p => p.offPct);
+  const defPcts = players.map(p => p.defPct);
+  
+  return {
+    per: calculateMedian(pers),
+    tsPct: calculateMedian(tsPcts),
+    pps: calculateMedian(ppsValues),
+    atRatio: calculateMedian(atRatios),
+    offPct: calculateMedian(offPcts),
+    defPct: calculateMedian(defPcts)
+  };
+}
+
+// Sort players array
+function sortPlayers(players, key, direction) {
+  return [...players].sort((a, b) => {
+    // Handle number column
+    if (key === 'number') {
+      const numA = parseInt(a.number) || 0;
+      const numB = parseInt(b.number) || 0;
+      return direction === 'desc' ? numB - numA : numA - numB;
+    }
+    
+    // Handle player name column
+    if (key === 'name') {
+      const nameA = a.name.toUpperCase();
+      const nameB = b.name.toUpperCase();
+      if (direction === 'desc') {
+        return nameB.localeCompare(nameA);
+      } else {
+        return nameA.localeCompare(nameB);
+      }
+    }
+    
+    // Normal numeric sort for all other columns
+    return direction === 'desc' ? b[key] - a[key] : a[key] - b[key];
+  });
+}
+
+// Render the analytics table with sorting
+async function renderAnalyticsTable() {
+  const tableElement = document.getElementById('analyticsTable');
+  tableElement.innerHTML = '<div class="loading">Loading player analytics...</div>';
+  
+  const players = await fetchAnalyticsData();
+  const teamMedians = calculateTeamMedians(players);
+  let currentPlayers = [...players];
+  let sortConfig = { key: null, direction: 'desc' }; // Default to descending
+  
+  function updateTable() {
+    const sortedPlayers = sortConfig.key ? 
+      sortPlayers(currentPlayers, sortConfig.key, sortConfig.direction) : 
+      currentPlayers;
+    
+    let html = `
+      <table class="stats-table">
+        <thead>
+          <tr>
+            <th data-key="number" class="${sortConfig.key === 'number' ? 'sort-' + sortConfig.direction : ''}">#</th>
+            <th data-key="name" class="${sortConfig.key === 'name' ? 'sort-' + sortConfig.direction : ''}">Player</th>
+            <th data-key="per" class="${sortConfig.key === 'per' ? 'sort-' + sortConfig.direction : ''}">PER</th>
+            <th data-key="tsPct" class="${sortConfig.key === 'tsPct' ? 'sort-' + sortConfig.direction : ''}">TS%</th>
+            <th data-key="pps" class="${sortConfig.key === 'pps' ? 'sort-' + sortConfig.direction : ''}">PPS</th>
+            <th data-key="atRatio" class="${sortConfig.key === 'atRatio' ? 'sort-' + sortConfig.direction : ''}">A/T</th>
+            <th data-key="offPct" class="${sortConfig.key === 'offPct' ? 'sort-' + sortConfig.direction : ''}">OFF%</th>
+            <th data-key="defPct" class="${sortConfig.key === 'defPct' ? 'sort-' + sortConfig.direction : ''}">DEF%</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+    
+    sortedPlayers.forEach(player => {
+      html += `
+        <tr>
+          <td class="player-number">${player.number}</td>
+          <td class="player-name">${player.name}</td>
+          <td>${formatDecimal(player.per)}</td>
+          <td>${formatPercentage(player.tsPct)}</td>
+          <td>${formatDecimal(player.pps)}</td>
+          <td>${formatDecimal(player.atRatio)}</td>
+          <td>${formatPercentage(player.offPct)}</td>
+          <td>${formatPercentage(player.defPct)}</td>
+        </tr>
+      `;
+    });
+    
+    // Add Team Median row
+    html += `
+        <tr class="median-row">
+          <td></td>
+          <td class="player-name">TEAM MEDIAN</td>
+          <td>${formatDecimal(teamMedians.per)}</td>
+          <td>${formatPercentage(teamMedians.tsPct)}</td>
+          <td>${formatDecimal(teamMedians.pps)}</td>
+          <td>${formatDecimal(teamMedians.atRatio)}</td>
+          <td>${formatPercentage(teamMedians.offPct)}</td>
+          <td>${formatPercentage(teamMedians.defPct)}</td>
+        </tr>
+      </tbody>
+    </table>
+    `;
+    
+    tableElement.innerHTML = html;
+    
+    // Add click handlers for sorting
+    document.querySelectorAll('.stats-table th[data-key]').forEach(header => {
+      header.addEventListener('click', () => {
+        const key = header.getAttribute('data-key');
+        let direction = 'desc'; // Default to descending first
+        
+        // Toggle if clicking same column
+        if (sortConfig.key === key) {
+          direction = sortConfig.direction === 'desc' ? 'asc' : 'desc';
+        }
+        
+        sortConfig = { key, direction };
+        updateTable();
+        addRowSelection();
+      });
+    });
+  }
+  
+  updateTable();
+  addRowSelection();
+}
+
+function addRowSelection() {
+  const rows = document.querySelectorAll('.stats-table tbody tr:not(.median-row)');
+  rows.forEach(row => {
+    row.addEventListener('click', function() {
+      rows.forEach(r => r.classList.remove('selected'));
+      this.classList.add('selected');
+    });
+  });
+}
+
+// Menu toggle
+const menuToggle = document.getElementById('menuToggle');
+const menuContent = document.getElementById('menuContent');
+
+menuToggle.addEventListener('click', function(e) {
+  e.stopPropagation();
+  menuContent.classList.toggle('show');
+});
+
+document.addEventListener('click', function() {
+  menuContent.classList.remove('show');
+});
+
+document.querySelectorAll('.menu-item').forEach(item => {
+  item.addEventListener('click', function(e) {
+    e.preventDefault();
+    menuContent.classList.remove('show');
+  });
+});
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+  renderAnalyticsTable();
+});
+</script>
+</body>
+</html>

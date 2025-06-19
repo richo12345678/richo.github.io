@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wolves U14 Girls Stats - Averages (Table)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      padding: 10px;
+      margin: 0 auto;
+      max-width: 100%;
+      background-color: #164835;
+      color: white;
+      -webkit-font-smoothing: antialiased;
+    }
+    .header { 
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 15px;
+      color: white;
+      padding-left: 10px;
+      position: relative;
+    }
+    .header-content {
+      text-align: left;
+    }
+    .logo {
+      height: 60px;
+      width: auto;
+    }
+    h2 { 
+      font-size: 22px;
+      margin-bottom: 5px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+    h3 {
+      font-size: 16px;
+      margin-top: 0;
+      font-weight: 400;
+      opacity: 0.9;
+    }
+    .boxscore-container {
+      background-color: white;
+      border-radius: 8px;
+      padding: 15px 20px 10px;
+      margin: 20px auto;
+      max-width: 1000px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      color: #333;
+      overflow-x: auto;
+    }
+    
+    .nav-menu {
+      position: relative;
+      display: inline-block;
+      z-index: 100;
+    }
+    
+    .menu-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 8px 15px;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+    
+    .menu-btn:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .menu-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      background-color: white;
+      min-width: 200px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      border-radius: 8px;
+      overflow: hidden;
+      z-index: 1;
+    }
+    
+    .menu-content.show {
+      display: block;
+    }
+    
+    .menu-item {
+      color: #333;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+      text-align: left;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background-color 0.2s;
+    }
+    
+    .menu-item:hover {
+      background-color: #f5f5f5;
+    }
+    
+    .current-page {
+      background-color: #164835;
+      color: white;
+    }
+    
+    .current-page:hover {
+      background-color: #0f3a2a;
+    }
+    
+    .header-group {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .stats-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      min-width: 1200px;
+    }
+    
+    .stats-table th {
+      background-color: #164835;
+      color: white;
+      padding: 8px 5px;
+      text-align: center;
+      font-weight: 500;
+      cursor: pointer;
+      position: relative;
+      user-select: none;
+    }
+    
+    .stats-table th:hover {
+      background-color: #0f3a2a;
+    }
+    
+    .stats-table th.sort-asc::after,
+    .stats-table th.sort-desc::after {
+      content: '';
+      display: inline-block;
+      margin-left: 5px;
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+    }
+    
+    .stats-table th.sort-asc::after {
+      border-bottom: 5px solid white;
+    }
+    
+    .stats-table th.sort-desc::after {
+      border-top: 5px solid white;
+    }
+    
+    .stats-table td {
+      padding: 8px 5px;
+      text-align: center;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .stats-table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    
+    .player-name {
+      text-align: left !important;
+      font-weight: 500;
+      white-space: nowrap;
+      padding-left: 8px;
+      min-width: 120px;
+    }
+    
+    .player-number {
+      text-align: center;
+      font-weight: 500;
+      width: 30px;
+    }
+    
+    .stats-table tr.selected {
+      background-color: #26a69a !important;
+      color: white;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+    
+    .definitions-container {
+      background-color: white;
+      border-radius: 8px;
+      padding: 15px 20px;
+      margin: 20px auto;
+      max-width: 1000px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      color: #333;
+    }
+    
+    .definitions-container h3 {
+      color: #164835;
+      font-weight: 600;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    
+    .definitions-list {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    @media (min-width: 600px) {
+      .definitions-list {
+        column-count: 2;
+        column-gap: 20px;
+      }
+    }
+    
+    .definitions-list li {
+      padding: 5px 0;
+      font-size: 14px;
+      break-inside: avoid;
+    }
+    
+    .definitions-list strong {
+      color: #164835;
+    }
+  </style>
+</head>
+<body>
+<div class="header">
+  <div class="header-group">
+    <img src="https://sbl.asn.au/wp-content/uploads/sites/2/2020/07/JoondalupWolves-Primary-Logo.png" alt="Wolves Logo" class="logo">
+    <div class="header-content">
+      <h2>2025 Player Averages (Table)</h2>
+      <h3>Wolves U14 Girls (Team 3)</h3>
+    </div>
+  </div>
+  
+  <div class="nav-menu">
+    <button class="menu-btn" id="menuToggle">☰</button>
+    <div class="menu-content" id="menuContent">
+      <a href="#" class="menu-item">Roster</a>
+      <a href="#" class="menu-item">Boxscores</a>
+      <a href="#" class="menu-item current-page">Averages (Table)</a>
+      <a href="#" class="menu-item">Averages (Radar)</a>
+      <a href="#" class="menu-item">Analytics</a>
+    </div>
+  </div>
+</div>
+
+<div class="boxscore-container">
+  <div id="averagesTable">
+    <div class="loading">Loading player averages...</div>
+  </div>
+</div>
+
+<div class="definitions-container">
+  <h3>Definitions</h3>
+  <ul class="definitions-list" id="definitionsList">
+    <li><strong>G</strong> - Number of games played</li>
+    <li><strong>PTS</strong> - Points per game</li>
+    <li><strong>REB</strong> - Rebounds per game</li>
+    <li><strong>AST</strong> - Assists per game</li>
+    <li><strong>STL</strong> - Steals per game</li>
+    <li><strong>BLK</strong> - Blocks per game</li>
+    <li><strong>TO</strong> - Turnovers per game</li>
+    <li><strong>PF</strong> - Personal fouls per game</li>
+    <li><strong>FGM</strong> - Field goals made per game</li>
+    <li><strong>FGA</strong> - Field goals attempted per game</li>
+    <li><strong>FG%</strong> - Field goal percentage</li>
+    <li><strong>3PM</strong> - 3-pointers made per game</li>
+    <li><strong>3PA</strong> - 3-pointers attempted per game</li>
+    <li><strong>3P%</strong> - 3-point percentage</li>
+    <li><strong>FTM</strong> - Free throws made per game</li>
+    <li><strong>FTA</strong> - Free throws attempted per game</li>
+    <li><strong>FT%</strong> - Free throw percentage</li>
+  </ul>
+</div>
+
+<script>
+// CSV data URL
+const averagesCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=711431833&single=true&output=csv";
+
+// Format number with 1 decimal place
+function formatDecimal(num) {
+  return num % 1 === 0 ? num.toFixed(1) : num.toFixed(1);
+}
+
+// Format percentage with special handling for zero attempts
+function formatPercentage(made, attempted) {
+  if (attempted === 0) return "0%";
+  const pct = (made / attempted * 100);
+  return pct % 1 === 0 ? pct.toFixed(0) + "%" : pct.toFixed(1) + "%";
+}
+
+// Fetch and parse CSV data
+async function fetchAveragesData() {
+  try {
+    const response = await fetch(averagesCsvUrl);
+    const csvText = await response.text();
+    const rows = csvText.split('\n').map(row => row.split(','));
+    
+    const players = [];
+    for (let i = 2; i <= 12; i++) {
+      if (i >= rows.length) continue;
+      
+      const row = rows[i];
+      const playerNumber = parseInt(row[0]) || 0;
+      if (playerNumber === 0) continue;
+      
+      players.push({
+        number: playerNumber,
+        name: row[1] || "",
+        games: parseInt(row[2]) || 0,
+        pts: parseFloat(row[3]) || 0,
+        reb: parseFloat(row[6]) || 0,
+        ast: parseFloat(row[7]) || 0,
+        stl: parseFloat(row[8]) || 0,
+        blk: parseFloat(row[9]) || 0,
+        to: parseFloat(row[10]) || 0,
+        pf: parseFloat(row[11]) || 0,
+        fgm: parseFloat(row[12]) || 0,
+        fga: parseFloat(row[13]) || 0,
+        "3pm": parseFloat(row[15]) || 0,
+        "3pa": parseFloat(row[16]) || 0,
+        ftm: parseFloat(row[18]) || 0,
+        fta: parseFloat(row[19]) || 0
+      });
+    }
+    return players;
+  } catch (error) {
+    console.error("Error fetching averages data:", error);
+    return [];
+  }
+}
+
+// Sort players array
+function sortPlayers(players, key, direction) {
+  return [...players].sort((a, b) => {
+    // Handle number column
+    if (key === 'number') {
+      return direction === 'desc' ? b.number - a.number : a.number - b.number;
+    }
+    
+    // Handle player name column
+    if (key === 'name') {
+      const nameA = a.name.toUpperCase();
+      const nameB = b.name.toUpperCase();
+      if (direction === 'desc') {
+        return nameB.localeCompare(nameA);
+      } else {
+        return nameA.localeCompare(nameB);
+      }
+    }
+    
+    // Handle percentages
+    if (key === 'fgPct') {
+      const aVal = a.fga > 0 ? a.fgm / a.fga : 0;
+      const bVal = b.fga > 0 ? b.fgm / b.fga : 0;
+      return direction === 'desc' ? bVal - aVal : aVal - bVal;
+    }
+    if (key === 'threePct') {
+      const aVal = a["3pa"] > 0 ? a["3pm"] / a["3pa"] : 0;
+      const bVal = b["3pa"] > 0 ? b["3pm"] / b["3pa"] : 0;
+      return direction === 'desc' ? bVal - aVal : aVal - bVal;
+    }
+    if (key === 'ftPct') {
+      const aVal = a.fta > 0 ? a.ftm / a.fta : 0;
+      const bVal = b.fta > 0 ? b.ftm / b.fta : 0;
+      return direction === 'desc' ? bVal - aVal : aVal - bVal;
+    }
+    
+    // Normal numeric sort
+    return direction === 'desc' ? b[key] - a[key] : a[key] - b[key];
+  });
+}
+
+// Render the averages table with sorting
+async function renderAveragesTable() {
+  const tableElement = document.getElementById('averagesTable');
+  tableElement.innerHTML = '<div class="loading">Loading player averages...</div>';
+  
+  const players = await fetchAveragesData();
+  let currentPlayers = [...players];
+  let sortConfig = { key: null, direction: 'desc' }; // Default to descending
+  
+  function updateTable() {
+    const sortedPlayers = sortConfig.key ? 
+      sortPlayers(currentPlayers, sortConfig.key, sortConfig.direction) : 
+      currentPlayers;
+    
+    let html = `
+      <table class="stats-table">
+        <thead>
+          <tr>
+            <th data-key="number" class="${sortConfig.key === 'number' ? 'sort-' + sortConfig.direction : ''}">#</th>
+            <th data-key="name" class="${sortConfig.key === 'name' ? 'sort-' + sortConfig.direction : ''}" 
+                style="text-align: left; padding-left: 8px; min-width: 120px;">Player</th>
+            <th data-key="games" class="${sortConfig.key === 'games' ? 'sort-' + sortConfig.direction : ''}">G</th>
+            <th data-key="pts" class="${sortConfig.key === 'pts' ? 'sort-' + sortConfig.direction : ''}">PTS</th>
+            <th data-key="reb" class="${sortConfig.key === 'reb' ? 'sort-' + sortConfig.direction : ''}">REB</th>
+            <th data-key="ast" class="${sortConfig.key === 'ast' ? 'sort-' + sortConfig.direction : ''}">AST</th>
+            <th data-key="stl" class="${sortConfig.key === 'stl' ? 'sort-' + sortConfig.direction : ''}">STL</th>
+            <th data-key="blk" class="${sortConfig.key === 'blk' ? 'sort-' + sortConfig.direction : ''}">BLK</th>
+            <th data-key="to" class="${sortConfig.key === 'to' ? 'sort-' + sortConfig.direction : ''}">TO</th>
+            <th data-key="pf" class="${sortConfig.key === 'pf' ? 'sort-' + sortConfig.direction : ''}">PF</th>
+            <th data-key="fgm" class="${sortConfig.key === 'fgm' ? 'sort-' + sortConfig.direction : ''}">FGM</th>
+            <th data-key="fga" class="${sortConfig.key === 'fga' ? 'sort-' + sortConfig.direction : ''}">FGA</th>
+            <th data-key="fgPct" class="${sortConfig.key === 'fgPct' ? 'sort-' + sortConfig.direction : ''}">FG%</th>
+            <th data-key="3pm" class="${sortConfig.key === '3pm' ? 'sort-' + sortConfig.direction : ''}">3PM</th>
+            <th data-key="3pa" class="${sortConfig.key === '3pa' ? 'sort-' + sortConfig.direction : ''}">3PA</th>
+            <th data-key="threePct" class="${sortConfig.key === 'threePct' ? 'sort-' + sortConfig.direction : ''}">3P%</th>
+            <th data-key="ftm" class="${sortConfig.key === 'ftm' ? 'sort-' + sortConfig.direction : ''}">FTM</th>
+            <th data-key="fta" class="${sortConfig.key === 'fta' ? 'sort-' + sortConfig.direction : ''}">FTA</th>
+            <th data-key="ftPct" class="${sortConfig.key === 'ftPct' ? 'sort-' + sortConfig.direction : ''}">FT%</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+    
+    sortedPlayers.forEach(player => {
+      const fgPct = formatPercentage(player.fgm, player.fga);
+      const threePct = formatPercentage(player["3pm"], player["3pa"]);
+      const ftPct = formatPercentage(player.ftm, player.fta);
+      
+      html += `
+        <tr>
+          <td class="player-number">${player.number}</td>
+          <td class="player-name">${player.name}</td>
+          <td>${player.games}</td>
+          <td>${formatDecimal(player.pts)}</td>
+          <td>${formatDecimal(player.reb)}</td>
+          <td>${formatDecimal(player.ast)}</td>
+          <td>${formatDecimal(player.stl)}</td>
+          <td>${formatDecimal(player.blk)}</td>
+          <td>${formatDecimal(player.to)}</td>
+          <td>${formatDecimal(player.pf)}</td>
+          <td>${formatDecimal(player.fgm)}</td>
+          <td>${formatDecimal(player.fga)}</td>
+          <td>${fgPct}</td>
+          <td>${formatDecimal(player["3pm"])}</td>
+          <td>${formatDecimal(player["3pa"])}</td>
+          <td>${threePct}</td>
+          <td>${formatDecimal(player.ftm)}</td>
+          <td>${formatDecimal(player.fta)}</td>
+          <td>${ftPct}</td>
+        </tr>
+      `;
+    });
+    
+    html += `</tbody></table>`;
+    tableElement.innerHTML = html;
+    
+    // Add click handlers for sorting
+    document.querySelectorAll('.stats-table th[data-key]').forEach(header => {
+      header.addEventListener('click', () => {
+        const key = header.getAttribute('data-key');
+        let direction = 'desc'; // Default to descending first
+        
+        // Toggle if clicking same column
+        if (sortConfig.key === key) {
+          direction = sortConfig.direction === 'desc' ? 'asc' : 'desc';
+        }
+        
+        sortConfig = { key, direction };
+        updateTable();
+        addRowSelection();
+      });
+    });
+  }
+  
+  updateTable();
+  addRowSelection();
+}
+
+function addRowSelection() {
+  const rows = document.querySelectorAll('.stats-table tbody tr');
+  rows.forEach(row => {
+    row.addEventListener('click', function() {
+      rows.forEach(r => r.classList.remove('selected'));
+      this.classList.add('selected');
+    });
+  });
+}
+
+// Menu toggle
+const menuToggle = document.getElementById('menuToggle');
+const menuContent = document.getElementById('menuContent');
+
+menuToggle.addEventListener('click', function(e) {
+  e.stopPropagation();
+  menuContent.classList.toggle('show');
+});
+
+document.addEventListener('click', function() {
+  menuContent.classList.remove('show');
+});
+
+document.querySelectorAll('.menu-item').forEach(item => {
+  item.addEventListener('click', function(e) {
+    e.preventDefault();
+    menuContent.classList.remove('show');
+  });
+});
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+  renderAveragesTable();
+});
+</script>
+</body>
+</html>
