@@ -1,0 +1,1564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wolves U14 Girls Stats</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      padding: 10px;
+      margin: 0 auto;
+      max-width: 100%;
+      background-color: #164835;
+      color: white;
+      -webkit-font-smoothing: antialiased;
+    }
+    .header { 
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 15px;
+      color: white;
+      padding-left: 10px;
+      position: relative;
+    }
+    .header-content {
+      text-align: left;
+    }
+    .logo {
+      height: 60px;
+      width: auto;
+    }
+    h2 { 
+      font-size: 22px;
+      margin-bottom: 5px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+    h3 {
+      font-size: 16px;
+      margin-top: 0;
+      font-weight: 400;
+      opacity: 0.9;
+    }
+    .nav-menu {
+      position: relative;
+      display: inline-block;
+      z-index: 100;
+    }
+    .menu-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 8px 15px;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+    .menu-btn:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    .menu-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      background-color: white;
+      min-width: 200px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      border-radius: 8px;
+      overflow: hidden;
+      z-index: 1;
+    }
+    .menu-content.show {
+      display: block;
+    }
+    .menu-item {
+      color: #333;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+      text-align: left;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background-color 0.2s;
+      cursor: pointer;
+    }
+    .menu-item:hover {
+      background-color: #f5f5f5;
+    }
+    .current-page {
+      background-color: #164835;
+      color: white;
+    }
+    .current-page:hover {
+      background-color: #0f3a2a;
+    }
+    .header-group {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    /* Hide all pages by default */
+    [id^="page-"] {
+      display: none;
+    }
+    .page-active {
+      display: block !important;
+    }
+    /* Boxscores Styles */
+    #page-boxscores .game-header-container,
+    #page-boxscores .boxscore-container,
+    #page-boxscores .season-games {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      color: #333;
+      margin: 20px auto 0;
+      max-width: 800px;
+      padding: 15px 20px;
+    }
+    #page-boxscores .boxscore-container {
+      margin-bottom: 20px;
+      min-width: 300px;
+      overflow-x: auto;
+    }
+    #page-boxscores .game-header-container {
+      margin-top: 0;
+    }
+    #page-boxscores .game-meta,
+    #page-boxscores .game-round {
+      text-align: center;
+      margin-bottom: 5px;
+    }
+    #page-boxscores .game-meta {
+      color: #666;
+      font-size: 14px;
+    }
+    #page-boxscores .game-round {
+      font-weight: 600;
+      color: #164835;
+    }
+    #page-boxscores .boxscore-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      align-items: flex-end;
+    }
+    #page-boxscores .team-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 40%;
+    }
+    #page-boxscores .team-name {
+      font-weight: 600;
+      font-size: 18px;
+      margin-bottom: 5px;
+      text-align: center;
+    }
+    #page-boxscores .team-score {
+      font-size: 24px;
+      font-weight: 700;
+      margin-top: 5px;
+    }
+    #page-boxscores .vs-text {
+      font-size: 16px;
+      font-weight: 500;
+      margin: 0 10px;
+      align-self: center;
+    }
+    #page-boxscores .stats-table {
+      width: auto;
+      border-collapse: collapse;
+      font-size: 14px;
+      min-width: 100%;
+    }
+    #page-boxscores .stats-table th {
+      background-color: #164835;
+      color: white;
+      padding: 8px 5px;
+      text-align: center;
+      font-weight: 500;
+      cursor: pointer;
+      position: relative;
+      user-select: none;
+      white-space: nowrap;
+    }
+    #page-boxscores .stats-table th:hover {
+      background-color: #0f3a2a;
+    }
+    #page-boxscores .stats-table th.sort-asc::after,
+    #page-boxscores .stats-table th.sort-desc::after,
+    #page-averages .stats-table th.sort-asc::after,
+    #page-averages .stats-table th.sort-desc::after,
+    #page-analytics .stats-table th.sort-asc::after,
+    #page-analytics .stats-table th.sort-desc::after {
+      content: '';
+      display: inline-block;
+      margin-left: 5px;
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+    }
+    #page-boxscores .stats-table th.sort-asc::after,
+    #page-averages .stats-table th.sort-asc::after,
+    #page-analytics .stats-table th.sort-asc::after {
+      border-bottom: 5px solid white;
+    }
+    #page-boxscores .stats-table th.sort-desc::after,
+    #page-averages .stats-table th.sort-desc::after,
+    #page-analytics .stats-table th.sort-desc::after {
+      border-top: 5px solid white;
+    }
+    #page-boxscores .stats-table td {
+      padding: 8px 5px;
+      text-align: center;
+      border-bottom: 1px solid #eee;
+    }
+    #page-boxscores .stats-table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    #page-boxscores .player-name {
+      text-align: left !important;
+      font-weight: 500;
+      white-space: nowrap;
+      padding-left: 8px;
+      min-width: 120px;
+    }
+    #page-boxscores .player-number {
+      text-align: center;
+      font-weight: 500;
+      width: 30px;
+    }
+    #page-boxscores .totals-row {
+      font-weight: 600;
+      background-color: #e6f2ed !important;
+    }
+    #page-boxscores .shot-column {
+      min-width: 50px;
+    }
+    #page-boxscores .stats-table tr.selected {
+      background-color: #26a69a !important;
+      color: white;
+    }
+    #page-boxscores .loading {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+    #page-boxscores .dnp-row {
+      color: #999;
+      font-style: italic;
+    }
+    #page-boxscores .limited-stats-note {
+      text-align: center;
+      margin: 10px 0;
+      font-style: italic;
+      font-weight: bold;
+      color: #666;
+    }
+    #page-boxscores .season-games {
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+    #page-boxscores .season-games h3 {
+      color: #164835;
+      font-weight: 600;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    #page-boxscores .game-list {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+    #page-boxscores .game-list li {
+      padding: 8px 10px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 15px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    #page-boxscores .game-list li:hover {
+      background-color: #f5f5f5;
+    }
+    #page-boxscores .game-list li.current {
+      font-weight: 600;
+      background-color: #e6f2ed;
+      border-left: 4px solid #164835;
+    }
+    #page-boxscores .game-list li.future {
+      color: #999;
+      cursor: not-allowed;
+    }
+    /* --- Averages Table --- */
+    #page-averages .boxscore-container {
+      background-color: white;
+      border-radius: 8px;
+      padding: 15px 20px 10px;
+      margin: 20px auto;
+      max-width: 1000px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      color: #333;
+      overflow-x: auto;
+    }
+    #page-averages .stats-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      min-width: 1200px;
+    }
+    #page-averages .stats-table th {
+      background-color: #164835;
+      color: white;
+      padding: 8px 5px;
+      text-align: center;
+      font-weight: 500;
+      cursor: pointer;
+      position: relative;
+      user-select: none;
+    }
+    #page-averages .stats-table td {
+      padding: 8px 5px;
+      text-align: center;
+      border-bottom: 1px solid #eee;
+    }
+    #page-averages .stats-table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    #page-averages .player-name {
+      text-align: left !important;
+      font-weight: 500;
+      white-space: nowrap;
+      padding-left: 8px;
+      min-width: 120px;
+    }
+    #page-averages .player-number {
+      text-align: center;
+      font-weight: 500;
+      width: 30px;
+    }
+    #page-averages .stats-table tr.selected {
+      background-color: #26a69a !important;
+      color: white;
+    }
+    #page-averages .loading {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+    #page-averages .definitions-container {
+      background-color: white;
+      border-radius: 8px;
+      padding: 15px 20px;
+      margin: 20px auto;
+      max-width: 1000px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      color: #333;
+    }
+    #page-averages .definitions-container h3 {
+      color: #164835;
+      font-weight: 600;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    #page-averages .definitions-list {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+    @media (min-width: 600px) {
+      #page-averages .definitions-list {
+        column-count: 2;
+        column-gap: 20px;
+      }
+    }
+    #page-averages .definitions-list li {
+      padding: 5px 0;
+      font-size: 14px;
+      break-inside: avoid;
+    }
+    #page-averages .definitions-list strong {
+      color: #164835;
+    }
+    /* --- Analytics --- */
+    #page-analytics .boxscore-container {
+      background-color: white;
+      border-radius: 8px;
+      padding: 15px 10px;
+      margin: 20px auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      color: #333;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      max-width: 100%;
+    }
+    #page-analytics .stats-table {
+      width: auto;
+      min-width: 700px;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    #page-analytics .stats-table th {
+      background-color: #164835;
+      color: white;
+      padding: 8px 12px;
+      text-align: center;
+      font-weight: 500;
+      cursor: pointer;
+      position: relative;
+      user-select: none;
+      white-space: nowrap;
+    }
+    #page-analytics .stats-table td {
+      padding: 8px 12px;
+      text-align: center;
+      border-bottom: 1px solid #eee;
+    }
+    #page-analytics .stats-table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    #page-analytics .player-name {
+      text-align: left !important;
+      font-weight: 500;
+      min-width: 130px;
+      white-space: nowrap;
+      padding-left: 8px;
+    }
+    #page-analytics .player-number {
+      text-align: center;
+      font-weight: 500;
+      width: 40px;
+    }
+    #page-analytics .stats-table tr.selected {
+      background-color: #26a69a !important;
+      color: white;
+    }
+    #page-analytics .loading {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+    #page-analytics .definitions-container {
+      background-color: white;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 20px 0;
+      width: 100%;
+      box-sizing: border-box;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      color: #333;
+    }
+    #page-analytics .definitions-container h3 {
+      color: #164835;
+      font-weight: 600;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    #page-analytics .definitions-list {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+    #page-analytics .definitions-list li {
+      padding: 8px 0;
+      font-size: 14px;
+      break-inside: avoid;
+    }
+    #page-analytics .definition-title {
+      font-weight: 600;
+      color: #164835;
+      display: block;
+      margin-bottom: 5px;
+    }
+    #page-analytics .metric-symbols {
+      display: inline-flex;
+      gap: 5px;
+      margin-left: 8px;
+    }
+    #page-analytics .efficiency-symbol {
+      color: #d6336c; /* Red */
+    }
+    #page-analytics .output-symbol {
+      color: #6f42c1; /* Purple */
+    }
+    #page-analytics .definition-formula {
+      font-family: 'Courier New', monospace;
+      background-color: #f0f9f8;
+      color: #26a69a;
+      padding: 3px 5px;
+      border-radius: 3px;
+      display: block;
+      margin: 5px 0;
+      font-size: 11px;
+      white-space: pre-wrap;
+      border-left: 3px solid #26a69a;
+    }
+    #page-analytics .definition-note {
+      font-style: italic;
+      font-size: 11px;
+      color: #666;
+      display: block;
+      margin-top: 3px;
+    }
+    #page-analytics .metric-key {
+      margin-top: 15px;
+      padding-top: 10px;
+      border-top: 1px solid #eee;
+      font-size: 12px;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    #page-analytics .key-item {
+      display: flex;
+      align-items: center;
+    }
+    #page-analytics .median-row {
+      font-weight: 600;
+      background-color: #e6f2ed !important;
+    }
+    /* --- Radar --- */
+    #page-radar .player-container {
+      background-color: white;
+      border-radius: 8px;
+      padding: 15px;
+      margin: 0 auto 20px;
+      max-width: 600px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    #page-radar .player-columns {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 5px;
+      flex-wrap: wrap;
+    }
+    #page-radar .player-column {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 140px;
+    }
+    #page-radar .player-checkbox { 
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    #page-radar .chart-wrapper {
+      width: 100%;
+      padding: 1px;
+      box-sizing: border-box;
+      background-color: white;
+      border-radius: 8px;
+      margin: 0 auto 20px;
+      max-width: 800px;
+      min-height: 400px;
+    }
+    #radarChart {
+      width: 100% !important;
+      height: 400px !important;
+      max-width: 100%;
+      display: block;
+      margin: 0 auto;
+    }
+    #page-radar .team-average-toggle {
+      text-align: center;
+      margin-top: 15px;
+      padding: 10px;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    #radarTeamAvgCheckbox { 
+      accent-color: #999;
+      margin: 0;
+      appearance: auto;
+      -webkit-appearance: auto;
+    }
+    #page-radar .team-average-toggle label {
+      color: white;
+      font-weight: 500;
+      margin: 0;
+    }
+    #page-radar .loading {
+      color: white;
+      text-align: center;
+      padding: 20px;
+      font-size: 18px;
+    }
+    label { 
+      margin-left: 4px;
+      font-size: 15px;
+      cursor: pointer;
+      font-weight: 500;
+      color: #333;
+    }
+    input[type="checkbox"] { 
+      width: 20px;
+      height: 20px;
+      min-width: 20px;
+      min-height: 20px;
+      cursor: pointer;
+      position: relative;
+      appearance: none;
+      -webkit-appearance: none;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      outline: none;
+      transition: all 0.2s;
+    }
+    input[type="checkbox"]:checked {
+      background-color: var(--player-color, #ccc);
+      border-color: var(--player-color, #ccc);
+    }
+    input[type="checkbox"]:not(:checked) {
+      opacity: 0.2;
+      background-color: var(--player-color, #ccc);
+    }
+  </style>
+</head>
+<body>
+<div class="header">
+  <div class="header-group">
+    <img src="https://sbl.asn.au/wp-content/uploads/sites/2/2020/07/JoondalupWolves-Primary-Logo.png" alt="Wolves Logo" class="logo">
+    <div class="header-content">
+      <h2 id="main-title">Wolves U14 Girls Stats</h2>
+      <h3>Wolves U14 Girls (Team 3)</h3>
+    </div>
+  </div>
+  <div class="nav-menu">
+    <button class="menu-btn" id="menuToggle">☰</button>
+    <div class="menu-content" id="menuContent">
+      <a data-page="boxscores" class="menu-item current-page" id="menuBoxscores">Boxscores</a>
+      <a data-page="averages" class="menu-item" id="menuAverages">Averages (Table)</a>
+      <a data-page="radar" class="menu-item" id="menuRadar">Averages (Radar)</a>
+      <a data-page="analytics" class="menu-item" id="menuAnalytics">Analytics</a>
+    </div>
+  </div>
+</div>
+
+<!-- Boxscores PAGE -->
+<div id="page-boxscores" class="page-active">
+  <div id="gameHeader"></div>
+  <div class="boxscore-container" id="boxscore">
+    <div class="loading">Loading boxscore data...</div>
+  </div>
+  <div class="season-games">
+    <h3>Season Fixture</h3>
+    <ul class="game-list" id="gameList">
+      <li data-round="1">ROUND 1 - Rockingham Flames</li>
+      <li data-round="2">ROUND 2 - Warwick Senators</li>
+      <li data-round="3">ROUND 3 - SouthWest Slammers (Blue)</li>
+      <li data-round="4">ROUND 4 - SouthWest Slammers (Red)</li>
+      <li data-round="5">ROUND 5 - East Perth Eagles</li>
+      <li data-round="6">ROUND 6 - Cockburn Cougars</li>
+      <li data-round="7">ROUND 7 - Eastern Suns</li>
+      <li data-round="8" class="current">ROUND 8 - Rockingham Flames</li>
+      <li data-round="9" class="future">ROUND 9 - Warwick Senators</li>
+      <li data-round="10" class="future">ROUND 10 - SouthWest Slammers (Blue)</li>
+      <li data-round="11" class="future">ROUND 11 - SouthWest Slammers (Red)</li>
+      <li data-round="12" class="future">ROUND 12 - East Perth Eagles</li>
+      <li data-round="13" class="future">ROUND 13 - Cockburn Cougars</li>
+      <li data-round="14" class="future">ROUND 14 - Eastern Suns</li>
+      <li data-round="15" class="future">ROUND 15 - SouthWest Slammers (Blue)</li>
+      <li data-round="16" class="future">ROUND 16 - Warwick Senators</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Averages (Table) PAGE -->
+<div id="page-averages">
+  <div class="boxscore-container">
+    <div id="averagesTable">
+      <div class="loading">Loading player averages...</div>
+    </div>
+  </div>
+  <div class="definitions-container">
+    <h3>Definitions</h3>
+    <ul class="definitions-list" id="definitionsList-averages">
+      <li><strong>G</strong> - Number of games played</li>
+      <li><strong>PTS</strong> - Points per game</li>
+      <li><strong>REB</strong> - Rebounds per game</li>
+      <li><strong>AST</strong> - Assists per game</li>
+      <li><strong>STL</strong> - Steals per game</li>
+      <li><strong>BLK</strong> - Blocks per game</li>
+      <li><strong>TO</strong> - Turnovers per game</li>
+      <li><strong>PF</strong> - Personal fouls per game</li>
+      <li><strong>FGM</strong> - Field goals made per game</li>
+      <li><strong>FGA</strong> - Field goals attempted per game</li>
+      <li><strong>FG%</strong> - Field goal percentage</li>
+      <li><strong>3PM</strong> - 3-pointers made per game</li>
+      <li><strong>3PA</strong> - 3-pointers attempted per game</li>
+      <li><strong>3P%</strong> - 3-point percentage</li>
+      <li><strong>FTM</strong> - Free throws made per game</li>
+      <li><strong>FTA</strong> - Free throws attempted per game</li>
+      <li><strong>FT%</strong> - Free throw percentage</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Radar Chart PAGE -->
+<div id="page-radar">
+  <div class="player-container">
+    <div class="player-columns">
+      <div class="player-column" id="radarPlayerCol1"></div>
+      <div class="player-column" id="radarPlayerCol2"></div>
+    </div>
+  </div>
+  <div class="chart-wrapper">
+    <canvas id="radarChart"></canvas>
+  </div>
+  <div class="team-average-toggle">
+    <input type="checkbox" id="radarTeamAvgCheckbox" checked>
+    <label for="radarTeamAvgCheckbox">Show Team Average</label>
+  </div>
+  <div id="radarLoading" class="loading">Loading data...</div>
+</div>
+
+<!-- Analytics PAGE -->
+<div id="page-analytics">
+  <div class="boxscore-container">
+    <div id="analyticsTable">
+      <div class="loading">Loading player analytics...</div>
+    </div>
+  </div>
+  <div class="definitions-container">
+    <h3>Definitions</h3>
+    <ul class="definitions-list" id="definitionsList-analytics">
+      <li>
+        <span class="definition-title">
+          PER – Player Efficiency Rating
+          <span class="metric-symbols">
+            <span class="efficiency-symbol">★</span>
+            <span class="output-symbol">★</span>
+          </span>
+        </span>
+        <span>A composite stat estimating a player's overall game impact. It includes positive contributions (points, rebounds, assists, steals, blocks), lightly deducts negative plays (turnovers and fouls), and adjusts for shooting efficiency compared to the team.</span>
+        <span class="definition-formula">PER = PTS + REB + AST + STL + BLK + ((FG% - Team FG%)/(Team FG%)) 
+            + ((FT% - Team FT%)/(Team FT%)) – (0.2 × FOULS) – (0.3 × TOs)</span>
+      </li>
+      <li>
+        <span class="definition-title">
+          TS% – True Shooting Percentage
+          <span class="metric-symbols">
+            <span class="efficiency-symbol">★</span>
+          </span>
+        </span>
+        <span>A smart shooting stat that includes regular shots, 3-pointers, and free throws to tell how efficient a player is at scoring. Shows how well someone turns shots into points.</span>
+        <span class="definition-formula">TS% = Points / (2 × (Field Goal Attempts + (0.44 × Field Throw Attempts)))</span>
+        <span class="definition-note">Note: In a game, a player may shoot 1, 2, or even 3 free throws depending on the situation. The number 0.44 is a standard factor used in basketball analytics to estimate average free throws per possession.</span>
+      </li>
+      <li>
+        <span class="definition-title">
+          PPS – Points Per Shot
+          <span class="metric-symbols">
+            <span class="efficiency-symbol">★</span>
+          </span>
+        </span>
+        <span>Tells how many points a player scores each time they shoot. It doesn't matter how many shots you take — just how effective each one is (a PPS of 1.0 means they score 1 point per shot).</span>
+        <span class="definition-formula">PPS = Points / Field Goal Attempts</span>
+      </li>
+      <li>
+        <span class="definition-title">
+          A/T – Assist-to-Turnover Ratio
+          <span class="metric-symbols">
+            <span class="efficiency-symbol">★</span>
+          </span>
+        </span>
+        <span>A metric for playmaking that compares how many assists a player makes versus how many times they lose the ball. Higher is better (an A/T-ratio of 1.0 means you make 1 assist for every turnover).</span>
+        <span class="definition-formula">A/T = Assists / Turnovers</span>
+      </li>
+      <li>
+        <span class="definition-title">
+          OFF% – Offence Percentage
+          <span class="metric-symbols">
+            <span class="output-symbol">★</span>
+          </span>
+        </span>
+        <span>An offensive impact stat that shows how involved a player is in offensive plays (an OFF% of 10% means you're involved in 10% of team's offence).</span>
+        <span class="definition-formula">OFF% = (Points + Offensive Rebounds + Assists) 
+            / (Team Points + Team Offensive Rebounds + Team Assists)</span>
+        <span class="definition-note">Note: Uses averages, not totals, to account for games played.</span>
+      </li>
+      <li>
+        <span class="definition-title">
+          DEF% – Defence Percentage
+          <span class="metric-symbols">
+            <span class="output-symbol">★</span>
+          </span>
+        </span>
+        <span>A defensive impact stat that shows how involved a player is in defensive plays (an DEF% of 10% means you're involved in 10% of team's defence).</span>
+        <span class="definition-formula">DEF% = (Defensive Rebounds + Steals + Blocks) 
+            / (Team Rebounds + Team Steals + Team Blocks)</span>
+        <span class="definition-note">Note: Uses averages, not totals, to account for games played.</span>
+      </li>
+    </ul>
+    <div class="metric-key">
+      <div class="key-item">
+        <span class="efficiency-symbol">★</span>
+        <span>Efficiency metric</span>
+      </div>
+      <div class="key-item">
+        <span class="output-symbol">★</span>
+        <span>Output metric</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ----------- Shared Menu and Navigation ----------- */
+const pages = {
+  boxscores: document.getElementById('page-boxscores'),
+  averages: document.getElementById('page-averages'),
+  analytics: document.getElementById('page-analytics'),
+  radar: document.getElementById('page-radar')
+};
+const menuLinks = document.querySelectorAll('.menu-item');
+function setActivePage(pageKey) {
+  Object.values(pages).forEach(page => page.classList.remove('page-active'));
+  if (pages[pageKey]) pages[pageKey].classList.add('page-active');
+  menuLinks.forEach(link => {
+    if (link.getAttribute('data-page') === pageKey) link.classList.add('current-page');
+    else link.classList.remove('current-page');
+  });
+  let title = "Wolves U14 Girls Stats";
+  if (pageKey === "boxscores") title = "Game Boxscores";
+  if (pageKey === "averages") title = "2025 Player Averages (Table)";
+  if (pageKey === "analytics") title = "2025 Player Analytics";
+  if (pageKey === "radar") title = "2025 Player Averages (Radar)";
+  document.getElementById("main-title").textContent = title;
+  if (pageKey === "radar") showRadarPage();
+}
+menuLinks.forEach(link => {
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    setActivePage(this.getAttribute('data-page'));
+    if (this.getAttribute('data-page') === "boxscores" && !window._boxscoresLoaded) {
+      renderBoxscore(currentGame); window._boxscoresLoaded = true;
+    }
+    if (this.getAttribute('data-page') === "averages" && !window._averagesLoaded) {
+      renderAveragesTable(); window._averagesLoaded = true;
+    }
+    if (this.getAttribute('data-page') === "analytics" && !window._analyticsLoaded) {
+      renderAnalyticsTable(); window._analyticsLoaded = true;
+    }
+  });
+});
+const menuToggle = document.getElementById('menuToggle');
+const menuContent = document.getElementById('menuContent');
+menuToggle.addEventListener('click', function(e) {
+  e.stopPropagation();
+  menuContent.classList.toggle('show');
+});
+document.addEventListener('click', function() {
+  menuContent.classList.remove('show');
+});
+
+/* ----------- Boxscores ----------- */
+const gameSheetUrls = {
+  1: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=797304496&single=true&output=csv",
+  2: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=1379588754&single=true&output=csv",
+  3: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=1722787100&single=true&output=csv",
+  4: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=0&single=true&output=csv",
+  5: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=1748576796&single=true&output=csv",
+  6: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=2013793463&single=true&output=csv",
+  7: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=488403667&single=true&output=csv",
+  8: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=1640243385&single=true&output=csv",
+  9: "",
+  10: "",
+  11: "",
+  12: "",
+  13: "",
+  14: "",
+  15: "",
+  16: ""
+};
+const seasonData = {};
+let currentGame = 8;
+let sortConfig = { key: null, direction: 'desc' };
+async function fetchLiveStats(round) {
+  const csvUrl = gameSheetUrls[round];
+  if (!csvUrl) return { players: [], metadata: {} };
+  try {
+    const response = await fetch(csvUrl);
+    const csvText = await response.text();
+    const rows = csvText.split('\n').map(row => row.split(','));
+    const metadata = {
+      round: rows[1]?.[22] || "",
+      date: rows[2]?.[22] || "",
+      venue: rows[3]?.[22] || "",
+      wolvesScore: rows[4]?.[22] || 0,
+      opponentScore: rows[5]?.[22] || 0,
+      opponent: rows[6]?.[22] || ""
+    };
+    const players = [];
+    for (let i = 2; i <= 12; i++) {
+      if (i >= rows.length) continue;
+      const row = rows[i];
+      const playerNumber = parseInt(row[0]) || 0;
+      if (playerNumber === 0) continue;
+      if (row.length > 1 && row[2] && row[2].includes("DNP")) {
+        players.push({ number: playerNumber, name: row[1] || "", dnpReason: row[2] || "DNP" });
+        continue;
+      }
+      players.push({
+        number: playerNumber,
+        name: row[1] || "",
+        pts: parseInt(row[2]) || 0,
+        reb: parseInt(row[5]) || 0,
+        ast: parseInt(row[6]) || 0,
+        stl: parseInt(row[7]) || 0,
+        blk: parseInt(row[8]) || 0,
+        to: parseInt(row[9]) || 0,
+        pf: parseInt(row[10]) || 0,
+        fgm: parseInt(row[11]) || 0,
+        fga: parseInt(row[12]) || 0,
+        "3pm": parseInt(row[14]) || 0,
+        "3pa": parseInt(row[15]) || 0,
+        ftm: parseInt(row[17]) || 0,
+        fta: parseInt(row[18]) || 0
+      });
+    }
+    return { players, metadata };
+  } catch (error) {
+    console.error(`Error fetching round ${round} stats:`, error);
+    return { players: [], metadata: {} };
+  }
+}
+function sortPlayersBox(players, key, direction) {
+  return [...players].sort((a, b) => {
+    if (a.dnpReason && !b.dnpReason) return 1;
+    if (!a.dnpReason && b.dnpReason) return -1;
+    if (a.dnpReason && b.dnpReason) {
+      return direction === 'desc' ? b.name.localeCompare(a.name) : a.name.localeCompare(b.name);
+    }
+    if (key === 'number') {
+      const numA = parseInt(a.number) || 0, numB = parseInt(b.number) || 0;
+      return direction === 'desc' ? numB - numA : numA - numB;
+    }
+    if (key === 'name') {
+      const nameA = a.name.toUpperCase(), nameB = b.name.toUpperCase();
+      if (direction === 'desc') return nameB.localeCompare(nameA);
+      else return nameA.localeCompare(nameB);
+    }
+    return direction === 'desc' ? b[key] - a[key] : a[key] - b[key];
+  });
+}
+function renderGameHeader(metadata, round) {
+  const gameHeaderElement = document.getElementById('gameHeader');
+  let html = `<div class="game-header-container">
+      <div class="game-round">${metadata.round || `ROUND ${round}`}</div>
+      <div class="game-meta">${metadata.date || ''} • ${metadata.venue || ''}</div>
+      <div class="boxscore-header">
+        <div class="team-info">
+          <div class="team-name">Joondalup Wolves</div>
+          <div class="team-score">${metadata.wolvesScore || 0}</div>
+        </div>
+        <div class="vs-text">vs</div>
+        <div class="team-info">
+          <div class="team-name">${metadata.opponent || 'Opponent'}</div>
+          <div class="team-score">${metadata.opponentScore || 0}</div>
+        </div>
+      </div>`;
+  if (round === 1) html += `<div class="limited-stats-note">*Only points and fouls were recorded for this game</div>`;
+  html += `</div>`;
+  gameHeaderElement.innerHTML = html;
+}
+async function renderBoxscore(round) {
+  const boxscoreElement = document.getElementById('boxscore');
+  boxscoreElement.innerHTML = '<div class="loading">Loading boxscore data...</div>';
+  const { players, metadata } = await fetchLiveStats(round);
+  if (!seasonData[round]) seasonData[round] = {};
+  seasonData[round] = { ...seasonData[round], ...metadata, players };
+  renderGameHeader(metadata, round);
+  const totals = { pts: 0, reb: 0, ast: 0, stl: 0, blk: 0, to: 0, pf: 0, fgm: 0, fga: 0, "3pm": 0, "3pa": 0, ftm: 0, fta: 0 };
+  players.forEach(player => {
+    if (!player.dnpReason) {
+      totals.pts += player.pts; totals.reb += player.reb; totals.ast += player.ast; totals.stl += player.stl; totals.blk += player.blk;
+      totals.to += player.to; totals.pf += player.pf; totals.fgm += player.fgm; totals.fga += player.fga;
+      totals["3pm"] += player["3pm"]; totals["3pa"] += player["3pa"]; totals.ftm += player.ftm; totals.fta += player.fta;
+    }
+  });
+  const fgPct = totals.fga > 0 ? (totals.fgm / totals.fga * 100).toFixed(1) : 0;
+  const threePct = totals["3pa"] > 0 ? (totals["3pm"] / totals["3pa"] * 100).toFixed(1) : 0;
+  const ftPct = totals.fta > 0 ? (totals.ftm / totals.fta * 100).toFixed(1) : 0;
+  let html = `<table class="stats-table"><thead><tr>
+          <th data-key="number" class="${sortConfig.key === 'number' ? 'sort-' + sortConfig.direction : ''}" style="width: 30px;">#</th>
+          <th data-key="name" class="${sortConfig.key === 'name' ? 'sort-' + sortConfig.direction : ''}" style="text-align: left; padding-left: 8px; min-width: 120px;">Player</th>
+          <th data-key="pts" class="${sortConfig.key === 'pts' ? 'sort-' + sortConfig.direction : ''}">PTS</th>
+          <th data-key="reb" class="${sortConfig.key === 'reb' ? 'sort-' + sortConfig.direction : ''}">REB</th>
+          <th data-key="ast" class="${sortConfig.key === 'ast' ? 'sort-' + sortConfig.direction : ''}">AST</th>
+          <th data-key="stl" class="${sortConfig.key === 'stl' ? 'sort-' + sortConfig.direction : ''}">STL</th>
+          <th data-key="blk" class="${sortConfig.key === 'blk' ? 'sort-' + sortConfig.direction : ''}">BLK</th>
+          <th data-key="to" class="${sortConfig.key === 'to' ? 'sort-' + sortConfig.direction : ''}">TO</th>
+          <th data-key="pf" class="${sortConfig.key === 'pf' ? 'sort-' + sortConfig.direction : ''}">PF</th>
+          <th class="shot-column">FGM-A</th>
+          <th>FG%</th>
+          <th class="shot-column">3PM-A</th>
+          <th>3P%</th>
+          <th class="shot-column">FTM-A</th>
+          <th>FT%</th>
+        </tr></thead><tbody>`;
+  const sortedPlayers = sortConfig.key ? sortPlayersBox(players, sortConfig.key, sortConfig.direction) : players;
+  sortedPlayers.forEach(player => {
+    if (player.dnpReason) {
+      html += `<tr class="dnp-row"><td class="player-number">${player.number}</td><td class="player-name">${player.name}</td><td colspan="12">${player.dnpReason}</td></tr>`;
+    } else {
+      const playerFgPct = player.fga > 0 ? (player.fgm / player.fga * 100).toFixed(1) : 0;
+      const playerThreePct = player["3pa"] > 0 ? (player["3pm"] / player["3pa"] * 100).toFixed(1) : 0;
+      const playerFtPct = player.fta > 0 ? (player.ftm / player.fta * 100).toFixed(1) : 0;
+      html += `<tr>
+            <td class="player-number">${player.number}</td>
+            <td class="player-name">${player.name}</td>
+            <td>${player.pts}</td>
+            <td>${player.reb}</td>
+            <td>${player.ast}</td>
+            <td>${player.stl}</td>
+            <td>${player.blk}</td>
+            <td>${player.to}</td>
+            <td>${player.pf}</td>
+            <td>${player.fgm}-${player.fga}</td>
+            <td>${playerFgPct}%</td>
+            <td>${player["3pm"]}-${player["3pa"]}</td>
+            <td>${playerThreePct}%</td>
+            <td>${player.ftm}-${player.fta}</td>
+            <td>${playerFtPct}%</td>
+          </tr>`;
+    }
+  });
+  html += `<tr class="totals-row">
+        <td></td>
+        <td class="player-name">TEAM TOTALS</td>
+        <td>${totals.pts}</td>
+        <td>${totals.reb}</td>
+        <td>${totals.ast}</td>
+        <td>${totals.stl}</td>
+        <td>${totals.blk}</td>
+        <td>${totals.to}</td>
+        <td>${totals.pf}</td>
+        <td>${totals.fgm}-${totals.fga}</td>
+        <td>${fgPct}%</td>
+        <td>${totals["3pm"]}-${totals["3pa"]}</td>
+        <td>${threePct}%</td>
+        <td>${totals.ftm}-${totals.fta}</td>
+        <td>${ftPct}%</td>
+      </tr></tbody></table>`;
+  boxscoreElement.innerHTML = html;
+  document.querySelectorAll('#boxscore .stats-table tbody tr:not(.dnp-row):not(.totals-row)').forEach(row => {
+    row.addEventListener('click', function() {
+      document.querySelectorAll('#boxscore .stats-table tbody tr').forEach(r => r.classList.remove('selected'));
+      this.classList.add('selected');
+    });
+  });
+  document.querySelectorAll('#boxscore .stats-table th[data-key]').forEach(header => {
+    header.addEventListener('click', () => {
+      const key = header.getAttribute('data-key');
+      let direction = 'desc';
+      if (sortConfig.key === key) direction = sortConfig.direction === 'desc' ? 'asc' : 'desc';
+      sortConfig = { key, direction };
+      renderBoxscore(round);
+    });
+  });
+}
+document.querySelectorAll('#gameList li').forEach(item => {
+  item.addEventListener('click', async function() {
+    if (!this.classList.contains('future')) {
+      const round = parseInt(this.getAttribute('data-round'));
+      currentGame = round;
+      document.querySelectorAll('#gameList li').forEach(game => game.classList.remove('current'));
+      this.classList.add('current');
+      await renderBoxscore(round);
+      document.getElementById('boxscore').scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+});
+window.addEventListener('DOMContentLoaded', () => {
+  renderBoxscore(currentGame);
+  window._boxscoresLoaded = true;
+});
+
+/* ----------- Averages Table ----------- */
+const averagesCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=711431833&single=true&output=csv";
+function formatDecimal(num) { return num % 1 === 0 ? num.toFixed(1) : num.toFixed(1); }
+function formatPercentage(made, attempted) {
+  if (attempted === 0) return "0%";
+  const pct = (made / attempted * 100);
+  return pct % 1 === 0 ? pct.toFixed(0) + "%" : pct.toFixed(1) + "%";
+}
+async function fetchAveragesData() {
+  try {
+    const response = await fetch(averagesCsvUrl);
+    const csvText = await response.text();
+    const rows = csvText.split('\n').map(row => row.split(','));
+    const players = [];
+    for (let i = 2; i <= 12; i++) {
+      if (i >= rows.length) continue;
+      const row = rows[i];
+      const playerNumber = parseInt(row[0]) || 0;
+      if (playerNumber === 0) continue;
+      players.push({
+        number: playerNumber,
+        name: row[1] || "",
+        games: parseInt(row[2]) || 0,
+        pts: parseFloat(row[3]) || 0,
+        reb: parseFloat(row[6]) || 0,
+        ast: parseFloat(row[7]) || 0,
+        stl: parseFloat(row[8]) || 0,
+        blk: parseFloat(row[9]) || 0,
+        to: parseFloat(row[10]) || 0,
+        pf: parseFloat(row[11]) || 0,
+        fgm: parseFloat(row[12]) || 0,
+        fga: parseFloat(row[13]) || 0,
+        "3pm": parseFloat(row[15]) || 0,
+        "3pa": parseFloat(row[16]) || 0,
+        ftm: parseFloat(row[18]) || 0,
+        fta: parseFloat(row[19]) || 0
+      });
+    }
+    return players;
+  } catch (error) {
+    console.error("Error fetching averages data:", error);
+    return [];
+  }
+}
+function sortPlayersAverages(players, key, direction) {
+  return [...players].sort((a, b) => {
+    if (key === 'number') return direction === 'desc' ? b.number - a.number : a.number - b.number;
+    if (key === 'name') {
+      const nameA = a.name.toUpperCase(), nameB = b.name.toUpperCase();
+      if (direction === 'desc') return nameB.localeCompare(nameA);
+      else return nameA.localeCompare(nameB);
+    }
+    if (key === 'fgPct') {
+      const aVal = a.fga > 0 ? a.fgm / a.fga : 0;
+      const bVal = b.fga > 0 ? b.fgm / b.fga : 0;
+      return direction === 'desc' ? bVal - aVal : aVal - bVal;
+    }
+    if (key === 'threePct') {
+      const aVal = a["3pa"] > 0 ? a["3pm"] / a["3pa"] : 0;
+      const bVal = b["3pa"] > 0 ? b["3pm"] / b["3pa"] : 0;
+      return direction === 'desc' ? bVal - aVal : aVal - bVal;
+    }
+    if (key === 'ftPct') {
+      const aVal = a.fta > 0 ? a.ftm / a.fta : 0;
+      const bVal = b.fta > 0 ? b.ftm / b.fta : 0;
+      return direction === 'desc' ? bVal - aVal : aVal - bVal;
+    }
+    return direction === 'desc' ? b[key] - a[key] : a[key] - b[key];
+  });
+}
+function renderAveragesTable() {
+  const tableElement = document.getElementById('averagesTable');
+  tableElement.innerHTML = '<div class="loading">Loading player averages...</div>';
+  fetchAveragesData().then(players => {
+    let currentPlayers = [...players];
+    let sortConfigA = { key: null, direction: 'desc' };
+    function updateTable() {
+      const sortedPlayers = sortConfigA.key ? sortPlayersAverages(currentPlayers, sortConfigA.key, sortConfigA.direction) : currentPlayers;
+      let html = `<table class="stats-table"><thead><tr>
+            <th data-key="number" class="${sortConfigA.key === 'number' ? 'sort-' + sortConfigA.direction : ''}">#</th>
+            <th data-key="name" class="${sortConfigA.key === 'name' ? 'sort-' + sortConfigA.direction : ''}" style="text-align: left; padding-left: 8px; min-width: 120px;">Player</th>
+            <th data-key="games" class="${sortConfigA.key === 'games' ? 'sort-' + sortConfigA.direction : ''}">G</th>
+            <th data-key="pts" class="${sortConfigA.key === 'pts' ? 'sort-' + sortConfigA.direction : ''}">PTS</th>
+            <th data-key="reb" class="${sortConfigA.key === 'reb' ? 'sort-' + sortConfigA.direction : ''}">REB</th>
+            <th data-key="ast" class="${sortConfigA.key === 'ast' ? 'sort-' + sortConfigA.direction : ''}">AST</th>
+            <th data-key="stl" class="${sortConfigA.key === 'stl' ? 'sort-' + sortConfigA.direction : ''}">STL</th>
+            <th data-key="blk" class="${sortConfigA.key === 'blk' ? 'sort-' + sortConfigA.direction : ''}">BLK</th>
+            <th data-key="to" class="${sortConfigA.key === 'to' ? 'sort-' + sortConfigA.direction : ''}">TO</th>
+            <th data-key="pf" class="${sortConfigA.key === 'pf' ? 'sort-' + sortConfigA.direction : ''}">PF</th>
+            <th data-key="fgm" class="${sortConfigA.key === 'fgm' ? 'sort-' + sortConfigA.direction : ''}">FGM</th>
+            <th data-key="fga" class="${sortConfigA.key === 'fga' ? 'sort-' + sortConfigA.direction : ''}">FGA</th>
+            <th data-key="fgPct" class="${sortConfigA.key === 'fgPct' ? 'sort-' + sortConfigA.direction : ''}">FG%</th>
+            <th data-key="3pm" class="${sortConfigA.key === '3pm' ? 'sort-' + sortConfigA.direction : ''}">3PM</th>
+            <th data-key="3pa" class="${sortConfigA.key === '3pa' ? 'sort-' + sortConfigA.direction : ''}">3PA</th>
+            <th data-key="threePct" class="${sortConfigA.key === 'threePct' ? 'sort-' + sortConfigA.direction : ''}">3P%</th>
+            <th data-key="ftm" class="${sortConfigA.key === 'ftm' ? 'sort-' + sortConfigA.direction : ''}">FTM</th>
+            <th data-key="fta" class="${sortConfigA.key === 'fta' ? 'sort-' + sortConfigA.direction : ''}">FTA</th>
+            <th data-key="ftPct" class="${sortConfigA.key === 'ftPct' ? 'sort-' + sortConfigA.direction : ''}">FT%</th>
+          </tr></thead><tbody>`;
+      sortedPlayers.forEach(player => {
+        const fgPct = formatPercentage(player.fgm, player.fga);
+        const threePct = formatPercentage(player["3pm"], player["3pa"]);
+        const ftPct = formatPercentage(player.ftm, player.fta);
+        html += `<tr>
+            <td class="player-number">${player.number}</td>
+            <td class="player-name">${player.name}</td>
+            <td>${player.games}</td>
+            <td>${formatDecimal(player.pts)}</td>
+            <td>${formatDecimal(player.reb)}</td>
+            <td>${formatDecimal(player.ast)}</td>
+            <td>${formatDecimal(player.stl)}</td>
+            <td>${formatDecimal(player.blk)}</td>
+            <td>${formatDecimal(player.to)}</td>
+            <td>${formatDecimal(player.pf)}</td>
+            <td>${formatDecimal(player.fgm)}</td>
+            <td>${formatDecimal(player.fga)}</td>
+            <td>${fgPct}</td>
+            <td>${formatDecimal(player["3pm"])}</td>
+            <td>${formatDecimal(player["3pa"])}</td>
+            <td>${threePct}</td>
+            <td>${formatDecimal(player.ftm)}</td>
+            <td>${formatDecimal(player.fta)}</td>
+            <td>${ftPct}</td>
+          </tr>`;
+      });
+      html += `</tbody></table>`;
+      tableElement.innerHTML = html;
+      document.querySelectorAll('#averagesTable .stats-table th[data-key]').forEach(header => {
+        header.addEventListener('click', () => {
+          const key = header.getAttribute('data-key');
+          let direction = 'desc';
+          if (sortConfigA.key === key) direction = sortConfigA.direction === 'desc' ? 'asc' : 'desc';
+          sortConfigA = { key, direction };
+          updateTable();
+          addRowSelection();
+        });
+      });
+    }
+    updateTable();
+    addRowSelection();
+  });
+}
+function addRowSelection() {
+  const rows = document.querySelectorAll('#averagesTable .stats-table tbody tr');
+  rows.forEach(row => {
+    row.addEventListener('click', function() {
+      rows.forEach(r => r.classList.remove('selected'));
+      this.classList.add('selected');
+    });
+  });
+}
+
+/* ----------- Analytics Table ----------- */
+const analyticsCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=711431833&single=true&output=csv";
+function formatPercentageAnalytics(num) {
+  if (isNaN(num)) return "0%";
+  const pct = num * 100;
+  return pct % 1 === 0 ? pct.toFixed(0) + "%" : pct.toFixed(1) + "%";
+}
+function calculateMedian(values) {
+  if (values.length === 0) return 0;
+  values.sort((a, b) => a - b);
+  const half = Math.floor(values.length / 2);
+  if (values.length % 2) return values[half];
+  return (values[half - 1] + values[half]) / 2;
+}
+async function fetchAnalyticsData() {
+  try {
+    const response = await fetch(analyticsCsvUrl);
+    const csvText = await response.text();
+    const rows = csvText.split('\n').map(row => row.split(','));
+    const playerRows = [
+      { name: "Piper", row: 31 },
+      { name: "Eden", row: 32 },
+      { name: "Ella", row: 33 },
+      { name: "Makayla", row: 34 },
+      { name: "Isla", row: 35 },
+      { name: "Madyson", row: 36 },
+      { name: "Eva", row: 37 },
+      { name: "Miyavi", row: 38 },
+      { name: "Aeris", row: 39 },
+      { name: "Sophie", row: 40 }
+    ];
+    const players = [];
+    for (const player of playerRows) {
+      const row = rows[player.row];
+      if (!row || row.length < 8) continue;
+      players.push({
+        number: row[0] || "",
+        name: row[1] || "",
+        per: parseFloat(row[2]) || 0,
+        tsPct: (parseFloat(row[3]) || 0) / 100,
+        pps: parseFloat(row[4]) || 0,
+        atRatio: parseFloat(row[5]) || 0,
+        offPct: (parseFloat(row[6]) || 0) / 100,
+        defPct: (parseFloat(row[7]) || 0) / 100
+      });
+    }
+    return players;
+  } catch (error) {
+    console.error("Error fetching analytics data:", error);
+    return [];
+  }
+}
+function calculateTeamMedians(players) {
+  const pers = players.map(p => p.per);
+  const tsPcts = players.map(p => p.tsPct);
+  const ppsValues = players.map(p => p.pps);
+  const atRatios = players.map(p => p.atRatio);
+  const offPcts = players.map(p => p.offPct);
+  const defPcts = players.map(p => p.defPct);
+  return {
+    per: calculateMedian(pers),
+    tsPct: calculateMedian(tsPcts),
+    pps: calculateMedian(ppsValues),
+    atRatio: calculateMedian(atRatios),
+    offPct: calculateMedian(offPcts),
+    defPct: calculateMedian(defPcts)
+  };
+}
+function sortPlayersAnalytics(players, key, direction) {
+  return [...players].sort((a, b) => {
+    if (key === 'number') {
+      const numA = parseInt(a.number) || 0, numB = parseInt(b.number) || 0;
+      return direction === 'desc' ? numB - numA : numA - numB;
+    }
+    if (key === 'name') {
+      const nameA = a.name.toUpperCase(), nameB = b.name.toUpperCase();
+      if (direction === 'desc') return nameB.localeCompare(nameA);
+      else return nameA.localeCompare(nameB);
+    }
+    return direction === 'desc' ? b[key] - a[key] : a[key] - b[key];
+  });
+}
+function renderAnalyticsTable() {
+  const tableElement = document.getElementById('analyticsTable');
+  tableElement.innerHTML = '<div class="loading">Loading player analytics...</div>';
+  fetchAnalyticsData().then(players => {
+    const teamMedians = calculateTeamMedians(players);
+    let currentPlayers = [...players];
+    let sortConfigAn = { key: null, direction: 'desc' };
+    function updateTable() {
+      const sortedPlayers = sortConfigAn.key ? sortPlayersAnalytics(currentPlayers, sortConfigAn.key, sortConfigAn.direction) : currentPlayers;
+      let html = `<table class="stats-table"><thead><tr>
+            <th data-key="number" class="${sortConfigAn.key === 'number' ? 'sort-' + sortConfigAn.direction : ''}">#</th>
+            <th data-key="name" class="${sortConfigAn.key === 'name' ? 'sort-' + sortConfigAn.direction : ''}">Player</th>
+            <th data-key="per" class="${sortConfigAn.key === 'per' ? 'sort-' + sortConfigAn.direction : ''}">PER</th>
+            <th data-key="tsPct" class="${sortConfigAn.key === 'tsPct' ? 'sort-' + sortConfigAn.direction : ''}">TS%</th>
+            <th data-key="pps" class="${sortConfigAn.key === 'pps' ? 'sort-' + sortConfigAn.direction : ''}">PPS</th>
+            <th data-key="atRatio" class="${sortConfigAn.key === 'atRatio' ? 'sort-' + sortConfigAn.direction : ''}">A/T</th>
+            <th data-key="offPct" class="${sortConfigAn.key === 'offPct' ? 'sort-' + sortConfigAn.direction : ''}">OFF%</th>
+            <th data-key="defPct" class="${sortConfigAn.key === 'defPct' ? 'sort-' + sortConfigAn.direction : ''}">DEF%</th>
+          </tr></thead><tbody>`;
+      sortedPlayers.forEach(player => {
+        html += `<tr>
+            <td class="player-number">${player.number}</td>
+            <td class="player-name">${player.name}</td>
+            <td>${formatDecimal(player.per)}</td>
+            <td>${formatPercentageAnalytics(player.tsPct)}</td>
+            <td>${formatDecimal(player.pps)}</td>
+            <td>${formatDecimal(player.atRatio)}</td>
+            <td>${formatPercentageAnalytics(player.offPct)}</td>
+            <td>${formatPercentageAnalytics(player.defPct)}</td>
+          </tr>`;
+      });
+      html += `<tr class="median-row">
+          <td></td>
+          <td class="player-name">TEAM MEDIAN</td>
+          <td>${formatDecimal(teamMedians.per)}</td>
+          <td>${formatPercentageAnalytics(teamMedians.tsPct)}</td>
+          <td>${formatDecimal(teamMedians.pps)}</td>
+          <td>${formatDecimal(teamMedians.atRatio)}</td>
+          <td>${formatPercentageAnalytics(teamMedians.offPct)}</td>
+          <td>${formatPercentageAnalytics(teamMedians.defPct)}</td>
+        </tr></tbody></table>`;
+      tableElement.innerHTML = html;
+      document.querySelectorAll('#analyticsTable .stats-table th[data-key]').forEach(header => {
+        header.addEventListener('click', () => {
+          const key = header.getAttribute('data-key');
+          let direction = 'desc';
+          if (sortConfigAn.key === key) direction = sortConfigAn.direction === 'desc' ? 'asc' : 'desc';
+          sortConfigAn = { key, direction };
+          updateTable();
+          addRowSelectionAnalytics();
+        });
+      });
+    }
+    updateTable();
+    addRowSelectionAnalytics();
+  });
+}
+function addRowSelectionAnalytics() {
+  const rows = document.querySelectorAll('#analyticsTable .stats-table tbody tr:not(.median-row)');
+  rows.forEach(row => {
+    row.addEventListener('click', function() {
+      rows.forEach(r => r.classList.remove('selected'));
+      this.classList.add('selected');
+    });
+  });
+}
+
+/* ----------- Radar Chart Page ----------- */
+let radarChart = null, radarDatasets = [];
+const radarColors = [
+  "#FF6384", "#63B3ED", "#FFCE56", "#4BC0C0", 
+  "#9B59B6", "#FF9F40", "#6A0DAD", "#4169E1",
+  "#FF63FF", "#63FF84"
+];
+const radarLabels = ["Points", "Rebounds", "Assists", "Blocks", "Steals", "FT%", "FG%"];
+const radarStatSuffixes = ["ppg", "rpg", "apg", "bpg", "spg", "%", "%"];
+const radarPlayerNames = ["Piper", "Eden", "Ella", "Makayla", "Isla", "Madyson", "Eva", "Miyavi", "Aeris", "Sophie"];
+const radarColumnMapping = {
+  points: 3, rebounds: 6, assists: 7, blocks: 9, steals: 8, ftPercent: 20, fgPercent: 14
+};
+let radarPlayers = {};
+function radarFetchData() {
+  const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=711431833&single=true&output=csv';
+  fetch(csvUrl)
+    .then(r => r.text())
+    .then(csvText => {
+      const rows = csvText.split('\n').map(row => row.split(','));
+      for (let i = 2; i <= 11; i++) {
+        if (i >= rows.length) break;
+        const row = rows[i], name = radarPlayerNames[i-2];
+        radarPlayers[name] = [
+          parseFloat(row[radarColumnMapping.points]) || 0,
+          parseFloat(row[radarColumnMapping.rebounds]) || 0,
+          parseFloat(row[radarColumnMapping.assists]) || 0,
+          parseFloat(row[radarColumnMapping.blocks]) || 0,
+          parseFloat(row[radarColumnMapping.steals]) || 0,
+          parseFloat(row[radarColumnMapping.ftPercent]) || 0,
+          parseFloat(row[radarColumnMapping.fgPercent]) || 0
+        ];
+      }
+      document.getElementById('radarLoading').style.display = 'none';
+      radarInitChart();
+      radarSetupCheckboxes();
+      document.getElementById("radarTeamAvgCheckbox").onchange();
+    }).catch(() => {
+      document.getElementById('radarLoading').textContent = 'Error loading data. Please try again later.';
+    });
+}
+function radarCalculateTeamAverages() {
+  return radarLabels.map((_, i) => {
+    const values = Object.values(radarPlayers).map(p => p[i]);
+    const mean = values.reduce((a, b) => a + b, 0) / values.length;
+    const sorted = [...values].sort((a, b) => a - b);
+    const median = sorted.length % 2 === 0 
+      ? (sorted[sorted.length/2 - 1] + sorted[sorted.length/2]) / 2 
+      : sorted[Math.floor(sorted.length/2)];
+    return Math.min(mean, median);
+  });
+}
+function radarNormalizeData(playerData) {
+  const statMax = radarLabels.map((_, i) =>
+    Math.max(...Object.values(radarPlayers).map(p => p[i]))
+  );
+  return playerData.map((val, i) => val ? (val / statMax[i]) * 100 : 0);
+}
+function radarInitChart() {
+  const ctx = document.getElementById("radarChart").getContext("2d");
+  radarChart = new Chart(ctx, {
+    type: 'radar',
+    data: { labels: radarLabels, datasets: radarDatasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { 
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: context => {
+              const name = context.dataset.label;
+              let raw = name === "Team Average"
+                ? radarCalculateTeamAverages()[context.dataIndex]
+                : radarPlayers[name][context.dataIndex];
+              raw = context.dataIndex === 6 ? raw : raw.toFixed(1);
+              const suffix = radarStatSuffixes[context.dataIndex];
+              return `${name}: ${raw}${suffix}`;
+            }
+          }
+        }
+      },
+      scales: {
+        r: {
+          angleLines: { display: true, color: 'rgba(200,200,200,0.5)' },
+          grid: { color: 'rgba(200,200,200,0.5)' },
+          suggestedMin: 0,
+          suggestedMax: 100,
+          pointLabels: { font: { size: window.innerWidth < 400 ? 12 : 14, weight: 'bold' }, color: '#164835' },
+          ticks: { display: false }
+        }
+      },
+      elements: {
+        line: { tension: 0.1, fill: false },
+        point: { radius: 3 }
+      }
+    }
+  });
+}
+function radarSetupCheckboxes() {
+  const col1 = document.getElementById("radarPlayerCol1");
+  const col2 = document.getElementById("radarPlayerCol2");
+  col1.innerHTML = ""; col2.innerHTML = "";
+  radarPlayerNames.forEach((name, i) => {
+    const div = document.createElement("div");
+    div.className = "player-checkbox";
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.id = "radar" + name;
+    checkbox.style.setProperty('--player-color', radarColors[i]);
+    const label = document.createElement("label");
+    label.htmlFor = "radar" + name;
+    label.textContent = name;
+    label.style.color = "#333";
+    checkbox.onchange = function() {
+      const idx = radarDatasets.findIndex(d => d.label === name);
+      if (this.checked) {
+        this.style.opacity = '1';
+        if (idx === -1) {
+          radarDatasets.push({
+            label: name,
+            data: radarNormalizeData(radarPlayers[name]),
+            borderColor: radarColors[i],
+            borderWidth: 2,
+            pointBackgroundColor: radarColors[i],
+            order: i
+          });
+        }
+      } else {
+        this.style.opacity = '0.2';
+        if (idx > -1) radarDatasets.splice(idx, 1);
+      }
+      radarChart.update();
+    };
+    div.appendChild(checkbox);
+    div.appendChild(label);
+    (i < Math.ceil(radarPlayerNames.length / 2) ? col1 : col2).appendChild(div);
+  });
+}
+// Team Average toggle
+document.getElementById("radarTeamAvgCheckbox").onchange = function() {
+  if (!radarChart) return;
+  const teamAverages = radarCalculateTeamAverages();
+  const idx = radarDatasets.findIndex(d => d.label === "Team Average");
+  if (this.checked && idx === -1) {
+    radarDatasets.push({
+      label: "Team Average",
+      data: radarNormalizeData(teamAverages),
+      borderColor: "#999",
+      borderWidth: 2,
+      borderDash: [6, 4],
+      pointBackgroundColor: "#999",
+      order: 1000
+    });
+  } else if (!this.checked && idx > -1) {
+    radarDatasets.splice(idx, 1);
+  }
+  radarChart.update();
+};
+let radarLoaded = false;
+function showRadarPage() {
+  if (!radarLoaded) {
+    radarFetchData();
+    radarLoaded = true;
+  }
+}
+</script>
+</body>
+</html>

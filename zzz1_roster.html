@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2025 Player Roster</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      padding: 10px;
+      margin: 0 auto;
+      max-width: 100%;
+      background-color: #164835;
+      color: white;
+      -webkit-font-smoothing: antialiased;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 15px;
+      color: white;
+      padding-left: 10px;
+    }
+    .header-content {
+      text-align: left;
+    }
+    .logo {
+      height: 60px;
+      width: auto;
+    }
+    h2 {
+      font-size: 20px;
+      margin-bottom: 5px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+    h3 {
+      font-size: 14px;
+      margin-top: 0;
+      font-weight: 400;
+      opacity: 0.9;
+    }
+    .player-container {
+      background-color: white;
+      border-radius: 8px;
+      padding: 5px 0 0 5px;
+      margin: 8px auto;
+      max-width: 1000px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      color: #333;
+    }
+    .nav-menu {
+      position: relative;
+      display: inline-block;
+      z-index: 100;
+    }
+    .menu-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 22px;
+      cursor: pointer;
+      padding: 8px 15px;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+    .menu-btn:hover {
+      background-color: rgba(255,255,255,0.1);
+    }
+    .menu-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      background-color: white;
+      min-width: 180px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      border-radius: 8px;
+      overflow: hidden;
+      z-index: 1;
+    }
+    .menu-content.show {
+      display: block;
+    }
+    .menu-item {
+      color: #333;
+      padding: 10px 14px;
+      text-decoration: none;
+      display: block;
+      text-align: left;
+      font-size: 13px;
+      font-weight: 500;
+      transition: background-color 0.2s;
+    }
+    .menu-item:hover {
+      background-color: #f5f5f5;
+    }
+    .current-page {
+      background-color: #164835;
+      color: white;
+    }
+    .current-page:hover {
+      background-color: #0f3a2a;
+    }
+    .header-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .player-card {
+      background-color: white;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .player-header {
+      display: flex;
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+      position: relative;
+      align-items: center;
+    }
+    .player-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      padding-bottom: 32px;
+    }
+    .player-name {
+      font-size: 17px;
+      font-weight: 600;
+      color: #164835;
+      margin: 0;
+      display: flex;
+      align-items: center;
+    }
+    .player-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #164835;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 14.4px;
+      font-weight: 500;
+      margin-right: 8px;
+      height: 20px;
+      line-height: 20px;
+    }
+    .stats-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .stat-button {
+      background-color: #f0f0f0;
+      border: none;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #164835;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 50px;
+    }
+    .stat-button span:first-child {
+      font-weight: 600;
+      font-size: 13px;
+    }
+    .stat-button span:last-child {
+      font-size: 11px;
+      opacity: 0.8;
+    }
+    .stats-toggle {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      color: #26a69a;
+      font-size: 12px;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .stats-toggle:hover {
+      text-decoration: underline;
+    }
+    .stats-container {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+    }
+    .stats-container.expanded {
+      max-height: 1000px;
+    }
+    .stats-section {
+      padding: 8px;
+    }
+    .stats-title {
+      color: #164835;
+      font-weight: 600;
+      margin: 0 0 8px 0;
+      font-size: 14px;
+    }
+    .stats-table {
+      width: calc(100% - 2px);
+      border-collapse: collapse;
+      font-size: 13px;
+      margin: 0 1px;
+    }
+    .stats-table th {
+      background-color: #164835;
+      color: white;
+      padding: 5px;
+      text-align: center;
+      font-weight: 500;
+    }
+    .stats-table td {
+      padding: 5px;
+      text-align: center;
+      border-bottom: 1px solid #eee;
+    }
+    .stats-table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    .dnp-cell {
+      color: #888;
+      font-style: italic;
+    }
+    .unavailable-cell {
+      color: #b71c1c;
+      font-style: italic;
+      background: #ffeaea;
+    }
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: white;
+    }
+    .games-table {
+      margin-top: 15px;
+    }
+    .games-table .stats-table {
+      font-size: 12px;
+    }
+    .games-table .stats-table th,
+    .games-table .stats-table td {
+      padding: 4px 3px;
+    }
+    @media (min-width: 600px) {
+      .player-name {
+        font-size: 18px;
+      }
+      .player-number {
+        font-size: 15.6px;
+        height: 22px;
+        line-height: 22px;
+      }
+      .stat-button {
+        min-width: 60px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="header">
+  <div class="header-group">
+    <img src="https://sbl.asn.au/wp-content/uploads/sites/2/2020/07/JoondalupWolves-Primary-Logo.png" alt="Wolves Logo" class="logo">
+    <div class="header-content">
+      <h2>2025 Player Roster</h2>
+      <h3>Wolves U14 Girls (Team 3)</h3>
+    </div>
+  </div>
+  <div class="nav-menu">
+    <button class="menu-btn" id="menuToggle">☰</button>
+    <div class="menu-content" id="menuContent">
+      <a href="#" class="menu-item current-page">Roster</a>
+      <a href="#" class="menu-item">Boxscores</a>
+      <a href="#" class="menu-item">Averages (Table)</a>
+      <a href="#" class="menu-item">Averages (Radar)</a>
+      <a href="#" class="menu-item">Analytics</a>
+    </div>
+  </div>
+</div>
+
+<div id="players-container">
+  <div class="loading">Loading player data...</div>
+</div>
+
+<script>
+// --- CONFIG ---
+const gameCsvUrls = {
+  1: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=797304496&single=true&output=csv",
+  2: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=1379588754&single=true&output=csv",
+  3: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=1722787100&single=true&output=csv",
+  4: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=0&single=true&output=csv",
+  5: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=1748576796&single=true&output=csv",
+  6: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=2013793463&single=true&output=csv",
+  7: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=488403667&single=true&output=csv",
+  8: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=1640243385&single=true&output=csv"
+};
+const averagesCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=711431833&single=true&output=csv";
+
+// --- MENU ---
+const menuToggle = document.getElementById('menuToggle');
+const menuContent = document.getElementById('menuContent');
+menuToggle.addEventListener('click', function(e) {
+  e.stopPropagation();
+  menuContent.classList.toggle('show');
+});
+document.addEventListener('click', function() {
+  menuContent.classList.remove('show');
+});
+document.querySelectorAll('.menu-item').forEach(item => {
+  item.addEventListener('click', function(e) {
+    e.preventDefault();
+    menuContent.classList.remove('show');
+    // Highlight current page
+    document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('current-page'));
+    this.classList.add('current-page');
+  });
+});
+
+// --- CSV PARSER ---
+function parseCsv(text) {
+  // Handles simple CSVs without quoted commas or newlines
+  return text.trim().split('\n').map(row => row.split(','));
+}
+
+// --- HELPERS ---
+function isDNP(stats) {
+  return stats && stats[2] && stats[2].includes('DNP');
+}
+function formatOpponent(opponent) {
+  if (!opponent) return '';
+  if (opponent.includes('Slammers(Blue)')) return 'SWS(Blue)';
+  if (opponent.includes('Slammers(Red)')) return 'SWS(Red)';
+  const words = opponent.trim().split(' ');
+  return words[words.length - 1];
+}
+
+// --- PLAYER CARD ---
+function createPlayerCard(playerData, rowNumber, allGameStats) {
+  const playerId = rowNumber - 2; // For unique IDs
+  let gameStatsRows = '';
+  allGameStats.forEach(game => {
+    const { round, opponent, playerStats, unavailable } = game;
+    const formattedOpponent = formatOpponent(opponent);
+    if (unavailable) {
+      gameStatsRows += `
+        <tr>
+          <td>${round || ''}</td>
+          <td>${formattedOpponent || ''}</td>
+          <td colspan="7" class="unavailable-cell">Game data unavailable</td>
+        </tr>
+      `;
+    } else if (isDNP(playerStats)) {
+      const dnpReason = playerStats[2] || 'DNP';
+      gameStatsRows += `
+        <tr>
+          <td>${round}</td>
+          <td>${formattedOpponent}</td>
+          <td colspan="7" class="dnp-cell">${dnpReason}</td>
+        </tr>
+      `;
+    } else {
+      gameStatsRows += `
+        <tr>
+          <td>${round}</td>
+          <td>${formattedOpponent}</td>
+          <td>${playerStats[2] || '0'}</td>
+          <td>${playerStats[5] || '0'}</td>
+          <td>${playerStats[6] || '0'}</td>
+          <td>${playerStats[7] || '0'}</td>
+          <td>${playerStats[8] || '0'}</td>
+          <td>${playerStats[13] || '0%'}</td>
+          <td>${playerStats[19] || '0%'}</td>
+        </tr>
+      `;
+    }
+  });
+  return `
+    <div class="player-container">
+      <div class="player-card">
+        <div class="player-header">
+          <div class="player-info">
+            <h1 class="player-name"><span class="player-number">${playerData[0]}</span>${playerData[1]}</h1>
+            <div class="stats-buttons">
+              <button class="stat-button">
+                <span>${playerData[3] || '0.0'}</span>
+                <span>PTS</span>
+              </button>
+              <button class="stat-button">
+                <span>${playerData[6] || '0.0'}</span>
+                <span>REB</span>
+              </button>
+              <button class="stat-button">
+                <span>${playerData[7] || '0.0'}</span>
+                <span>AST</span>
+              </button>
+              <button class="stat-button">
+                <span>${playerData[8] || '0.0'}</span>
+                <span>STL</span>
+              </button>
+              <button class="stat-button">
+                <span>${playerData[9] || '0.0'}</span>
+                <span>BLK</span>
+              </button>
+              <button class="stat-button">
+                <span>${playerData[14] || '0.0%'}</span>
+                <span>FG%</span>
+              </button>
+              <button class="stat-button">
+                <span>${playerData[20] || '0.0%'}</span>
+                <span>FT%</span>
+              </button>
+            </div>
+            <a class="stats-toggle" id="statsToggle${playerId}">VIEW GAME STATS ▼</a>
+          </div>
+        </div>
+        <div class="stats-container" id="statsContainer${playerId}">
+          <div class="stats-section games-table">
+            <h3 class="stats-title">WABL 2025 Games</h3>
+            <table class="stats-table">
+              <thead>
+                <tr>
+                  <th>R</th><th>OPP</th><th>PTS</th><th>REB</th><th>AST</th><th>STL</th><th>BLK</th><th>FG%</th><th>FT%</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${gameStatsRows}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// --- TOGGLE SETUP ---
+function setupStatsToggle(toggleId, containerId) {
+  const statsToggle = document.getElementById(toggleId);
+  const statsContainer = document.getElementById(containerId);
+  if (statsToggle && statsContainer) {
+    statsToggle.addEventListener('click', function() {
+      statsContainer.classList.toggle('expanded');
+      this.textContent = statsContainer.classList.contains('expanded') ? 
+        'HIDE GAME STATS ▲' : 'VIEW GAME STATS ▼';
+    });
+  }
+}
+
+// --- MAIN FETCH & RENDER ---
+async function fetchAndRenderPlayers() {
+  try {
+    // Fetch all game CSVs in parallel (one fetch per game)
+    const gameFetchPromises = Object.entries(gameCsvUrls).map(async ([gameNumber, url]) => {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Fetch failed');
+        const csvText = await response.text();
+        const rows = parseCsv(csvText);
+        // Get round and opponent info
+        const roundCell = rows[1]?.[22] || '';
+        const opponentCell = rows[6]?.[22] || '';
+        const round = roundCell.split(' ').pop();
+        const opponent = opponentCell;
+        return { gameNumber, rows, round, opponent, unavailable: false };
+      } catch (err) {
+        // Mark game as unavailable
+        return { gameNumber, rows: [], round: '', opponent: '', unavailable: true };
+      }
+    });
+
+    // Also fetch averages CSV
+    const averagesPromise = fetch(averagesCsvUrl).then(r => r.text());
+    const [games, averagesCsvText] = await Promise.all([Promise.all(gameFetchPromises), averagesPromise]);
+    const averagesRows = parseCsv(averagesCsvText);
+    const playerRows = averagesRows.slice(2, 12); // Data rows for 10 players
+
+    // For each player, build their game stats by row index (rowNumber)
+    let playersHtml = '';
+    for (let i = 0; i < playerRows.length; i++) {
+      const rowNumber = i + 3; // 1-based Google Sheets row number, 0/1=header
+      const playerData = playerRows[i];
+      // For each game, get that player's row
+      const allGameStats = games.map(game => {
+        if (game.unavailable) {
+          return { round: game.round, opponent: game.opponent, playerStats: null, unavailable: true };
+        }
+        // In Sheets, the first two rows are likely header, so player 1 = row 3 (index 2)
+        const gamePlayerRow = rowNumber - 1;
+        const playerStats = game.rows.length > gamePlayerRow ? game.rows[gamePlayerRow] : [];
+        return {
+          round: game.round,
+          opponent: game.opponent,
+          playerStats,
+          unavailable: false
+        };
+      });
+      playersHtml += createPlayerCard(playerData, rowNumber, allGameStats);
+    }
+    document.getElementById('players-container').innerHTML = playersHtml;
+    for (let i = 1; i <= 10; i++) {
+      setupStatsToggle(`statsToggle${i}`, `statsContainer${i}`);
+    }
+  } catch (error) {
+    console.error('Error loading player data:', error);
+    document.getElementById('players-container').innerHTML = `
+      <div class="loading" style="color: #ff6b6b;">
+        Error loading player data. Please try again later.
+      </div>
+    `;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', fetchAndRenderPlayers);
+</script>
+</body>
+</html>
