@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wolves U14 Girls Stats - Player Profile</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      padding: 10px;
+      margin: 0 auto;
+      max-width: 100%;
+      background-color: #164835;
+      color: white;
+      -webkit-font-smoothing: antialiased;
+    }
+    .header { 
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 15px;
+      color: white;
+      padding-left: 10px;
+      position: relative;
+    }
+    .header-content {
+      text-align: left;
+    }
+    .logo {
+      height: 60px;
+      width: auto;
+    }
+    h2 { 
+      font-size: 20px;
+      margin-bottom: 5px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+    h3 {
+      font-size: 14px;
+      margin-top: 0;
+      font-weight: 400;
+      opacity: 0.9;
+    }
+    .player-container {
+      background-color: white;
+      border-radius: 8px;
+      padding: 5px 0 0 5px;
+      margin: 8px auto;
+      max-width: 1000px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      color: #333;
+    }
+    
+    /* Navigation Menu Styles */
+    .nav-menu {
+      position: relative;
+      display: inline-block;
+      z-index: 100;
+    }
+    
+    .menu-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 22px;
+      cursor: pointer;
+      padding: 8px 15px;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+    
+    .menu-btn:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .menu-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      background-color: white;
+      min-width: 180px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      border-radius: 8px;
+      overflow: hidden;
+      z-index: 1;
+    }
+    
+    .menu-content.show {
+      display: block;
+    }
+    
+    .menu-item {
+      color: #333;
+      padding: 10px 14px;
+      text-decoration: none;
+      display: block;
+      text-align: left;
+      font-size: 13px;
+      font-weight: 500;
+      transition: background-color 0.2s;
+    }
+    
+    .menu-item:hover {
+      background-color: #f5f5f5;
+    }
+    
+    .current-page {
+      background-color: #164835;
+      color: white;
+    }
+    
+    .current-page:hover {
+      background-color: #0f3a2a;
+    }
+    
+    .header-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Player Card Styles */
+    .player-card {
+      background-color: white;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    .player-header {
+      display: flex;
+      padding: 8px 8px 8px 0;
+      border-bottom: 1px solid #eee;
+      position: relative;
+    }
+    
+    .player-photo {
+      width: 90px;
+      height: 90px;
+      border-radius: 8px 0 0 8px;
+      object-fit: cover;
+      border: 2px solid #164835;
+      margin-right: 10px;
+    }
+    
+    .player-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-right: 8px;
+    }
+    
+    .player-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #164835;
+      margin: 0 0 4px 0;
+    }
+    
+    .player-number {
+      display: inline-block;
+      background-color: #164835;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      margin-right: 4px;
+    }
+    
+    .player-position, .player-club {
+      font-size: 12px;
+      color: #333;
+      margin: 2px 0;
+      line-height: 1.4;
+    }
+    
+    .player-position strong, .player-club strong {
+      font-weight: 500;
+      color: #164835;
+      display: block;
+      margin-bottom: 2px;
+      font-size: 12px;
+    }
+    
+    .player-club {
+      margin-top: 6px;
+    }
+    
+    .stats-toggle {
+      position: absolute;
+      right: 8px;
+      bottom: 8px;
+      color: #26a69a;
+      font-size: 12px;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    
+    .stats-toggle:hover {
+      text-decoration: underline;
+    }
+    
+    .stats-container {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+    }
+    
+    .stats-container.expanded {
+      max-height: 1000px;
+    }
+    
+    .stats-section {
+      padding: 8px;
+    }
+    
+    .stats-title {
+      color: #164835;
+      font-weight: 600;
+      margin: 0 0 8px 0;
+      font-size: 14px;
+    }
+    
+    .stats-table {
+      width: calc(100% - 2px);
+      border-collapse: collapse;
+      font-size: 12px;
+      margin: 0 1px;
+    }
+    
+    .stats-table th {
+      background-color: #164835;
+      color: white;
+      padding: 5px;
+      text-align: center;
+      font-weight: 500;
+    }
+    
+    .stats-table td {
+      padding: 5px;
+      text-align: center;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .stats-table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    
+    @media (min-width: 400px) {
+      .player-photo {
+        width: 100px;
+        height: 100px;
+      }
+      
+      .player-name {
+        font-size: 17px;
+      }
+      
+      .stats-table {
+        font-size: 13px;
+      }
+    }
+    
+    @media (min-width: 600px) {
+      .player-photo {
+        width: 110px;
+        height: 110px;
+      }
+      
+      .player-name {
+        font-size: 18px;
+      }
+      
+      .player-position, .player-club {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="header">
+  <div class="header-group">
+    <img src="https://sbl.asn.au/wp-content/uploads/sites/2/2020/07/JoondalupWolves-Primary-Logo.png" alt="Wolves Logo" class="logo">
+    <div class="header-content">
+      <h2>Player Profile</h2>
+      <h3>Wolves U14 Girls (Team 3)</h3>
+    </div>
+  </div>
+  
+  <div class="nav-menu">
+    <button class="menu-btn" id="menuToggle">☰</button>
+    <div class="menu-content" id="menuContent">
+      <a href="#" class="menu-item">Roster</a>
+      <a href="#" class="menu-item">Boxscores</a>
+      <a href="#" class="menu-item">Averages (Table)</a>
+      <a href="#" class="menu-item">Averages (Radar)</a>
+      <a href="#" class="menu-item">Analytics</a>
+    </div>
+  </div>
+</div>
+
+<!-- Piper Viegas Container -->
+<div class="player-container">
+  <div class="player-card">
+    <div class="player-header">
+      <img src="https://drive.google.com/uc?export=view&id=1GiWqAneQ2qeICxUsNTgiJ2yBt8q5BI6E" 
+           alt="Piper Viegas" 
+           class="player-photo">
+      <div class="player-info">
+        <h1 class="player-name">
+          <span class="player-number">4</span> Piper Viegas
+        </h1>
+        <p class="player-position"><strong>Position</strong>Shooting Guard</p>
+        <p class="player-club"><strong>Domestic Club</strong>Joondalup Lakers</p>
+        <a class="stats-toggle" id="statsToggle1">VIEW STATS ▼</a>
+      </div>
+    </div>
+    
+    <div class="stats-container" id="statsContainer1">
+      <div class="stats-section">
+        <h3 class="stats-title">WABL 2025 Averages</h3>
+        <table class="stats-table">
+          <thead>
+            <tr>
+              <th>PTS</th>
+              <th>REB</th>
+              <th>AST</th>
+              <th>STL</th>
+              <th>BLK</th>
+              <th>FG%</th>
+              <th>FT%</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>4.5</td>
+              <td>3.0</td>
+              <td>1.1</td>
+              <td>0.9</td>
+              <td>0.2</td>
+              <td>43.9%</td>
+              <td>46.7%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Eden Maratos Container -->
+<div class="player-container">
+  <div class="player-card">
+    <div class="player-header">
+      <img src="https://via.placeholder.com/150?text=Eden+Maratos" 
+           alt="Eden Maratos" 
+           class="player-photo">
+      <div class="player-info">
+        <h1 class="player-name">
+          <span class="player-number">5</span> Eden Maratos
+        </h1>
+        <p class="player-position"><strong>Position</strong>Point Guard</p>
+        <p class="player-club"><strong>Domestic Club</strong>Padbury Pumas</p>
+        <a class="stats-toggle" id="statsToggle2">VIEW STATS ▼</a>
+      </div>
+    </div>
+    
+    <div class="stats-container" id="statsContainer2">
+      <div class="stats-section">
+        <h3 class="stats-title">WABL 2025 Averages</h3>
+        <table class="stats-table">
+          <thead>
+            <tr>
+              <th>PTS</th>
+              <th>REB</th>
+              <th>AST</th>
+              <th>STL</th>
+              <th>BLK</th>
+              <th>FG%</th>
+              <th>FT%</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>0.0</td>
+              <td>0.0</td>
+              <td>0.0</td>
+              <td>0.0</td>
+              <td>0.0</td>
+              <td>0.0%</td>
+              <td>0.0%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Menu toggle functionality
+const menuToggle = document.getElementById('menuToggle');
+const menuContent = document.getElementById('menuContent');
+
+menuToggle.addEventListener('click', function(e) {
+  e.stopPropagation();
+  menuContent.classList.toggle('show');
+});
+
+// Close menu when clicking anywhere else
+document.addEventListener('click', function() {
+  menuContent.classList.remove('show');
+});
+
+// Disable menu item clicks
+document.querySelectorAll('.menu-item').forEach(item => {
+  item.addEventListener('click', function(e) {
+    e.preventDefault();
+    menuContent.classList.remove('show');
+  });
+});
+
+// Toggle stats visibility for both players
+function setupStatsToggle(toggleId, containerId) {
+  const statsToggle = document.getElementById(toggleId);
+  const statsContainer = document.getElementById(containerId);
+    
+  statsToggle.addEventListener('click', function() {
+    statsContainer.classList.toggle('expanded');
+    this.textContent = statsContainer.classList.contains('expanded') ? 
+      'HIDE STATS ▲' : 'VIEW STATS ▼';
+  });
+}
+
+setupStatsToggle('statsToggle1', 'statsContainer1');
+setupStatsToggle('statsToggle2', 'statsContainer2');
+
+// Fetch data from CSV
+async function fetchPlayerStats() {
+  try {
+    const response = await fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=711431833&single=true&output=csv');
+    const csvText = await response.text();
+    const rows = csvText.split('\n').map(row => row.split(','));
+    
+    // Update Piper Viegas' stats (row 3 in CSV)
+    if (rows.length > 2) {
+      const piperRow = rows[2];
+      document.querySelector('#statsContainer1 td:nth-child(1)').textContent = piperRow[3] || '4.5'; // PTS
+      document.querySelector('#statsContainer1 td:nth-child(2)').textContent = piperRow[6] || '3.0'; // REB
+      document.querySelector('#statsContainer1 td:nth-child(3)').textContent = piperRow[7] || '1.1'; // AST
+      document.querySelector('#statsContainer1 td:nth-child(4)').textContent = piperRow[8] || '0.9'; // STL
+      document.querySelector('#statsContainer1 td:nth-child(5)').textContent = piperRow[9] || '0.2'; // BLK
+      document.querySelector('#statsContainer1 td:nth-child(6)').textContent = piperRow[14] || '43.9%'; // FG%
+      document.querySelector('#statsContainer1 td:nth-child(7)').textContent = piperRow[20] || '46.7%'; // FT%
+    }
+    
+    // Update Eden Maratos' stats (row 4 in CSV)
+    if (rows.length > 3) {
+      const edenRow = rows[3];
+      document.querySelector('#statsContainer2 td:nth-child(1)').textContent = edenRow[3] || '0.0'; // PTS
+      document.querySelector('#statsContainer2 td:nth-child(2)').textContent = edenRow[6] || '0.0'; // REB
+      document.querySelector('#statsContainer2 td:nth-child(3)').textContent = edenRow[7] || '0.0'; // AST
+      document.querySelector('#statsContainer2 td:nth-child(4)').textContent = edenRow[8] || '0.0'; // STL
+      document.querySelector('#statsContainer2 td:nth-child(5)').textContent = edenRow[9] || '0.0'; // BLK
+      document.querySelector('#statsContainer2 td:nth-child(6)').textContent = edenRow[14] || '0.0%'; // FG%
+      document.querySelector('#statsContainer2 td:nth-child(7)').textContent = edenRow[20] || '0.0%'; // FT%
+    }
+    
+  } catch (error) {
+    console.error('Error fetching player stats:', error);
+    // Fallback to default values if fetch fails
+  }
+}
+
+// Load the actual stats when page loads
+document.addEventListener('DOMContentLoaded', fetchPlayerStats);
+</script>
+</body>
+</html>
