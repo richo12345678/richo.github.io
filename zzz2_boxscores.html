@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wolves U14 Girls Stats - Live Boxscores</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      padding: 10px;
+      margin: 0 auto;
+      max-width: 100%;
+      background-color: #164835;
+      color: white;
+      -webkit-font-smoothing: antialiased;
+    }
+    .header { 
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 15px;
+      color: white;
+      padding-left: 10px;
+      position: relative;
+    }
+    .header-content {
+      text-align: left;
+    }
+    .logo {
+      height: 60px;
+      width: auto;
+    }
+    h2 { 
+      font-size: 22px;
+      margin-bottom: 5px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+    h3 {
+      font-size: 16px;
+      margin-top: 0;
+      font-weight: 400;
+      opacity: 0.9;
+    }
+    
+    .game-header-container {
+      background-color: white;
+      border-radius: 8px;
+      padding: 15px 20px;
+      margin: 20px auto;
+      max-width: 800px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      color: #333;
+    }
+    
+    .boxscore-container {
+      background-color: white;
+      border-radius: 8px;
+      padding: 15px 20px;
+      margin: 0 auto 20px;
+      max-width: 800px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      color: #333;
+      overflow-x: auto;
+      min-width: 300px;
+    }
+    
+    .game-meta {
+      text-align: center;
+      margin-bottom: 15px;
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .game-round {
+      text-align: center;
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: #164835;
+    }
+    
+    .boxscore-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      align-items: flex-end;
+    }
+    
+    .team-info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 40%;
+    }
+    
+    .team-name {
+      font-weight: 600;
+      font-size: 18px;
+      margin-bottom: 5px;
+      text-align: center;
+    }
+    
+    .team-score {
+      font-size: 24px;
+      font-weight: 700;
+      margin-top: 5px;
+    }
+    
+    .vs-text {
+      font-size: 16px;
+      font-weight: 500;
+      margin: 0 10px;
+      align-self: center;
+    }
+    
+    .stats-table {
+      width: auto;
+      border-collapse: collapse;
+      font-size: 14px;
+      min-width: 100%;
+    }
+    
+    .stats-table th {
+      background-color: #164835;
+      color: white;
+      padding: 8px 5px;
+      text-align: center;
+      font-weight: 500;
+      cursor: pointer;
+      position: relative;
+      user-select: none;
+      white-space: nowrap;
+    }
+    
+    .stats-table th:hover {
+      background-color: #0f3a2a;
+    }
+    
+    .stats-table th.sort-asc::after,
+    .stats-table th.sort-desc::after {
+      content: '';
+      display: inline-block;
+      margin-left: 5px;
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+    }
+    
+    .stats-table th.sort-asc::after {
+      border-bottom: 5px solid white;
+    }
+    
+    .stats-table th.sort-desc::after {
+      border-top: 5px solid white;
+    }
+    
+    .stats-table td {
+      padding: 8px 5px;
+      text-align: center;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .stats-table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    
+    .player-name {
+      text-align: left !important;
+      font-weight: 500;
+      white-space: nowrap;
+      padding-left: 8px;
+      min-width: 120px;
+    }
+    
+    .player-number {
+      text-align: center;
+      font-weight: 500;
+      width: 30px;
+    }
+    
+    .totals-row {
+      font-weight: 600;
+      background-color: #e6f2ed !important;
+    }
+    
+    .shot-column {
+      min-width: 50px;
+    }
+    
+    .stats-table tr.selected {
+      background-color: #26a69a !important;
+      color: white;
+    }
+    
+    .season-games {
+      background-color: white;
+      border-radius: 8px;
+      padding: 15px 20px;
+      margin: 20px auto;
+      max-width: 800px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      color: #333;
+    }
+    
+    .season-games h3 {
+      color: #164835;
+      font-weight: 600;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    
+    .game-list {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .game-list li {
+      padding: 8px 10px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 15px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .game-list li:hover {
+      background-color: #f5f5f5;
+    }
+    
+    .game-list li.current {
+      font-weight: 600;
+      background-color: #e6f2ed;
+      border-left: 4px solid #164835;
+    }
+    
+    .game-list li.future {
+      color: #999;
+      cursor: not-allowed;
+    }
+    
+    .nav-menu {
+      position: relative;
+      display: inline-block;
+      z-index: 100;
+    }
+    
+    .menu-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 8px 15px;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+    
+    .menu-btn:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .menu-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      background-color: white;
+      min-width: 200px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      border-radius: 8px;
+      overflow: hidden;
+      z-index: 1;
+    }
+    
+    .menu-content.show {
+      display: block;
+    }
+    
+    .menu-item {
+      color: #333;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+      text-align: left;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background-color 0.2s;
+    }
+    
+    .menu-item:hover {
+      background-color: #f5f5f5;
+    }
+    
+    .current-page {
+      background-color: #164835;
+      color: white;
+    }
+    
+    .current-page:hover {
+      background-color: #0f3a2a;
+    }
+    
+    .header-group {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+    
+    .dnp-row {
+      color: #999;
+      font-style: italic;
+    }
+    
+    .limited-stats-note {
+      text-align: center;
+      margin: 10px 0;
+      font-style: italic;
+      font-weight: bold;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+<div class="header">
+  <div class="header-group">
+    <img src="https://sbl.asn.au/wp-content/uploads/sites/2/2020/07/JoondalupWolves-Primary-Logo.png" alt="Wolves Logo" class="logo">
+    <div class="header-content">
+      <h2>Game Boxscores</h2>
+      <h3>Wolves U14 Girls (Team 3)</h3>
+    </div>
+  </div>
+  
+  <div class="nav-menu">
+    <button class="menu-btn" id="menuToggle">☰</button>
+    <div class="menu-content" id="menuContent">
+      <a href="#" class="menu-item">Roster</a>
+      <a href="#" class="menu-item current-page">Boxscores</a>
+      <a href="#" class="menu-item">Averages (Table)</a>
+      <a href="#" class="menu-item">Averages (Radar)</a>
+      <a href="#" class="menu-item">Analytics</a>
+    </div>
+  </div>
+</div>
+
+<div id="gameHeader">
+  <!-- Game header will be loaded here -->
+</div>
+
+<div class="boxscore-container" id="boxscore">
+  <div class="loading">Loading boxscore data...</div>
+</div>
+
+<div class="season-games">
+  <h3>Season Fixture</h3>
+  <ul class="game-list" id="gameList">
+    <li data-round="1">ROUND 1 - Rockingham Flames</li>
+    <li data-round="2">ROUND 2 - Warwick Senators</li>
+    <li data-round="3">ROUND 3 - SouthWest Slammers (Blue)</li>
+    <li data-round="4">ROUND 4 - SouthWest Slammers (Red)</li>
+    <li data-round="5">ROUND 5 - East Perth Eagles</li>
+    <li data-round="6">ROUND 6 - Cockburn Cougars</li>
+    <li data-round="7">ROUND 7 - Eastern Suns</li>
+    <li data-round="8" class="current">ROUND 8 - Rockingham Flames</li>
+    <li data-round="9" class="future">ROUND 9 - Warwick Senators</li>
+    <li data-round="10" class="future">ROUND 10 - SouthWest Slammers (Blue)</li>
+    <li data-round="11" class="future">ROUND 11 - SouthWest Slammers (Red)</li>
+    <li data-round="12" class="future">ROUND 12 - East Perth Eagles</li>
+    <li data-round="13" class="future">ROUND 13 - Cockburn Cougars</li>
+    <li data-round="14" class="future">ROUND 14 - Eastern Suns</li>
+    <li data-round="15" class="future">ROUND 15 - SouthWest Slammers (Blue)</li>
+    <li data-round="16" class="future">ROUND 16 - Warwick Senators</li>
+  </ul>
+</div>
+
+<script>
+// Menu toggle functionality
+const menuToggle = document.getElementById('menuToggle');
+const menuContent = document.getElementById('menuContent');
+
+menuToggle.addEventListener('click', function(e) {
+  e.stopPropagation();
+  menuContent.classList.toggle('show');
+});
+
+document.addEventListener('click', function() {
+  menuContent.classList.remove('show');
+});
+
+document.querySelectorAll('.menu-item').forEach(item => {
+  item.addEventListener('click', function(e) {
+    e.preventDefault();
+    menuContent.classList.remove('show');
+  });
+});
+
+// Game data configuration with ALL published rounds (1-8)
+const gameSheetUrls = {
+  1: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=797304496&single=true&output=csv",
+  2: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=1379588754&single=true&output=csv",
+  3: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=1722787100&single=true&output=csv",
+  4: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=0&single=true&output=csv",
+  5: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=1748576796&single=true&output=csv",
+  6: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=2013793463&single=true&output=csv",
+  7: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=488403667&single=true&output=csv",
+  8: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTx_Gj_jt5i_wvL07zSs48DPlE_CkkP49G6EnhYcLKKH3tJvn0r9pEOrIySkkc6TJ1dyGHSA2a5GbW7/pub?gid=1640243385&single=true&output=csv",
+  9: "",
+  10: "",
+  11: "",
+  12: "",
+  13: "",
+  14: "",
+  15: "",
+  16: ""
+};
+
+// Empty season data - will be populated from the spreadsheet
+const seasonData = {};
+
+let currentGame = 8;
+let sortConfig = { key: null, direction: 'desc' }; // Default to descending
+
+// Fetch and parse CSV data
+async function fetchLiveStats(round) {
+  const csvUrl = gameSheetUrls[round];
+  if (!csvUrl) return { players: [], metadata: {} };
+
+  try {
+    const response = await fetch(csvUrl);
+    const csvText = await response.text();
+    const rows = csvText.split('\n').map(row => row.split(','));
+
+    // Extract metadata from W column (row 2-7)
+    const metadata = {
+      round: rows[1]?.[22] || "",      // W2
+      date: rows[2]?.[22] || "",       // W3
+      venue: rows[3]?.[22] || "",      // W4
+      wolvesScore: rows[4]?.[22] || 0, // W5
+      opponentScore: rows[5]?.[22] || 0, // W6
+      opponent: rows[6]?.[22] || ""    // W7
+    };
+
+    const players = [];
+    for (let i = 2; i <= 12; i++) { // Rows 3-13 (A3-A12)
+      if (i >= rows.length) continue;
+      
+      const row = rows[i];
+      const playerNumber = parseInt(row[0]) || 0;
+      
+      // Skip row if player number is 0 (this removes the unwanted totals row)
+      if (playerNumber === 0) continue;
+      
+      // Check for DNP (merged cells will have empty values after first column)
+      if (row.length > 1 && row[2] && row[2].includes("DNP")) {
+        players.push({
+          number: playerNumber,
+          name: row[1] || "",
+          dnpReason: row[2] || "DNP"
+        });
+        continue;
+      }
+
+      players.push({
+        number: playerNumber,              // A (Player Number)
+        name: row[1] || "",                // B (Player Name)
+        pts: parseInt(row[2]) || 0,        // C (PTS)
+        reb: parseInt(row[5]) || 0,        // F (REB)
+        ast: parseInt(row[6]) || 0,        // G (AST)
+        stl: parseInt(row[7]) || 0,        // H (STL)
+        blk: parseInt(row[8]) || 0,        // I (BLK)
+        to: parseInt(row[9]) || 0,         // J (TO)
+        pf: parseInt(row[10]) || 0,        // K (PF)
+        fgm: parseInt(row[11]) || 0,       // L (FGM)
+        fga: parseInt(row[12]) || 0,       // M (FGA)
+        "3pm": parseInt(row[14]) || 0,     // O (3PM)
+        "3pa": parseInt(row[15]) || 0,     // P (3PA)
+        ftm: parseInt(row[17]) || 0,       // R (FTM)
+        fta: parseInt(row[18]) || 0        // S (FTA)
+      });
+    }
+    return { players, metadata };
+  } catch (error) {
+    console.error(`Error fetching round ${round} stats:`, error);
+    return { players: [], metadata: {} };
+  }
+}
+
+// Sort players array
+function sortPlayers(players, key, direction) {
+  return [...players].sort((a, b) => {
+    // Handle DNP players - always put them at the bottom
+    if (a.dnpReason && !b.dnpReason) return 1;
+    if (!a.dnpReason && b.dnpReason) return -1;
+    if (a.dnpReason && b.dnpReason) {
+      return direction === 'desc' ? 
+        b.name.localeCompare(a.name) : 
+        a.name.localeCompare(b.name);
+    }
+    
+    // Handle number column
+    if (key === 'number') {
+      const numA = parseInt(a.number) || 0;
+      const numB = parseInt(b.number) || 0;
+      return direction === 'desc' ? numB - numA : numA - numB;
+    }
+    
+    // Handle player name column
+    if (key === 'name') {
+      const nameA = a.name.toUpperCase();
+      const nameB = b.name.toUpperCase();
+      if (direction === 'desc') {
+        return nameB.localeCompare(nameA);
+      } else {
+        return nameA.localeCompare(nameB);
+      }
+    }
+    
+    // Normal numeric sort for all other columns
+    return direction === 'desc' ? b[key] - a[key] : a[key] - b[key];
+  });
+}
+
+// Render the game header
+function renderGameHeader(metadata, round) {
+  const gameHeaderElement = document.getElementById('gameHeader');
+  
+  let html = `
+    <div class="game-header-container">
+      <div class="game-round">${metadata.round || `ROUND ${round}`}</div>
+      <div class="game-meta">
+        ${metadata.date || ''} • ${metadata.venue || ''}
+      </div>
+      
+      <div class="boxscore-header">
+        <div class="team-info">
+          <div class="team-name">Joondalup Wolves</div>
+          <div class="team-score">${metadata.wolvesScore || 0}</div>
+        </div>
+        
+        <div class="vs-text">vs</div>
+        
+        <div class="team-info">
+          <div class="team-name">${metadata.opponent || 'Opponent'}</div>
+          <div class="team-score">${metadata.opponentScore || 0}</div>
+        </div>
+      </div>
+  `;
+
+  // Add special note for Round 1
+  if (round === 1) {
+    html += `
+      <div class="limited-stats-note">
+        *Only points and fouls were recorded for this game
+      </div>
+    `;
+  }
+  
+  html += `</div>`;
+  
+  gameHeaderElement.innerHTML = html;
+}
+
+// Render the boxscore
+async function renderBoxscore(round) {
+  const boxscoreElement = document.getElementById('boxscore');
+  boxscoreElement.innerHTML = '<div class="loading">Loading boxscore data...</div>';
+  
+  // Fetch live stats and metadata
+  const { players, metadata } = await fetchLiveStats(round);
+  
+  // Store the metadata in seasonData for future use
+  if (!seasonData[round]) {
+    seasonData[round] = {};
+  }
+  seasonData[round] = {
+    ...seasonData[round],
+    ...metadata,
+    players
+  };
+
+  // Render game header
+  renderGameHeader(metadata, round);
+
+  // Calculate totals
+  const totals = {
+    pts: 0, reb: 0, ast: 0, stl: 0, blk: 0, to: 0, pf: 0,
+    fgm: 0, fga: 0, "3pm": 0, "3pa": 0, ftm: 0, fta: 0
+  };
+  
+  players.forEach(player => {
+    if (!player.dnpReason) {
+      totals.pts += player.pts;
+      totals.reb += player.reb;
+      totals.ast += player.ast;
+      totals.stl += player.stl;
+      totals.blk += player.blk;
+      totals.to += player.to;
+      totals.pf += player.pf;
+      totals.fgm += player.fgm;
+      totals.fga += player.fga;
+      totals["3pm"] += player["3pm"];
+      totals["3pa"] += player["3pa"];
+      totals.ftm += player.ftm;
+      totals.fta += player.fta;
+    }
+  });
+  
+  // Calculate percentages
+  const fgPct = totals.fga > 0 ? (totals.fgm / totals.fga * 100).toFixed(1) : 0;
+  const threePct = totals["3pa"] > 0 ? (totals["3pm"] / totals["3pa"] * 100).toFixed(1) : 0;
+  const ftPct = totals.fta > 0 ? (totals.ftm / totals.fta * 100).toFixed(1) : 0;
+  
+  // Generate HTML for boxscore
+  let html = `
+    <table class="stats-table">
+      <thead>
+        <tr>
+          <th data-key="number" class="${sortConfig.key === 'number' ? 'sort-' + sortConfig.direction : ''}" style="width: 30px;">#</th>
+          <th data-key="name" class="${sortConfig.key === 'name' ? 'sort-' + sortConfig.direction : ''}" style="text-align: left; padding-left: 8px; min-width: 120px;">Player</th>
+          <th data-key="pts" class="${sortConfig.key === 'pts' ? 'sort-' + sortConfig.direction : ''}">PTS</th>
+          <th data-key="reb" class="${sortConfig.key === 'reb' ? 'sort-' + sortConfig.direction : ''}">REB</th>
+          <th data-key="ast" class="${sortConfig.key === 'ast' ? 'sort-' + sortConfig.direction : ''}">AST</th>
+          <th data-key="stl" class="${sortConfig.key === 'stl' ? 'sort-' + sortConfig.direction : ''}">STL</th>
+          <th data-key="blk" class="${sortConfig.key === 'blk' ? 'sort-' + sortConfig.direction : ''}">BLK</th>
+          <th data-key="to" class="${sortConfig.key === 'to' ? 'sort-' + sortConfig.direction : ''}">TO</th>
+          <th data-key="pf" class="${sortConfig.key === 'pf' ? 'sort-' + sortConfig.direction : ''}">PF</th>
+          <th class="shot-column">FGM-A</th>
+          <th>FG%</th>
+          <th class="shot-column">3PM-A</th>
+          <th>3P%</th>
+          <th class="shot-column">FTM-A</th>
+          <th>FT%</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+  
+  // Sort players based on current sort config
+  const sortedPlayers = sortConfig.key ? 
+    sortPlayers(players, sortConfig.key, sortConfig.direction) : 
+    players;
+  
+  // Add player rows
+  sortedPlayers.forEach(player => {
+    if (player.dnpReason) {
+      html += `
+        <tr class="dnp-row">
+          <td class="player-number">${player.number}</td>
+          <td class="player-name">${player.name}</td>
+          <td colspan="12">${player.dnpReason}</td>
+        </tr>
+      `;
+    } else {
+      const playerFgPct = player.fga > 0 ? (player.fgm / player.fga * 100).toFixed(1) : 0;
+      const playerThreePct = player["3pa"] > 0 ? (player["3pm"] / player["3pa"] * 100).toFixed(1) : 0;
+      const playerFtPct = player.fta > 0 ? (player.ftm / player.fta * 100).toFixed(1) : 0;
+      
+      html += `
+        <tr>
+          <td class="player-number">${player.number}</td>
+          <td class="player-name">${player.name}</td>
+          <td>${player.pts}</td>
+          <td>${player.reb}</td>
+          <td>${player.ast}</td>
+          <td>${player.stl}</td>
+          <td>${player.blk}</td>
+          <td>${player.to}</td>
+          <td>${player.pf}</td>
+          <td>${player.fgm}-${player.fga}</td>
+          <td>${playerFgPct}%</td>
+          <td>${player["3pm"]}-${player["3pa"]}</td>
+          <td>${playerThreePct}%</td>
+          <td>${player.ftm}-${player.fta}</td>
+          <td>${playerFtPct}%</td>
+        </tr>
+      `;
+    }
+  });
+  
+  // Add totals row
+  html += `
+      <tr class="totals-row">
+        <td></td>
+        <td class="player-name">TEAM TOTALS</td>
+        <td>${totals.pts}</td>
+        <td>${totals.reb}</td>
+        <td>${totals.ast}</td>
+        <td>${totals.stl}</td>
+        <td>${totals.blk}</td>
+        <td>${totals.to}</td>
+        <td>${totals.pf}</td>
+        <td>${totals.fgm}-${totals.fga}</td>
+        <td>${fgPct}%</td>
+        <td>${totals["3pm"]}-${totals["3pa"]}</td>
+        <td>${threePct}%</td>
+        <td>${totals.ftm}-${totals.fta}</td>
+        <td>${ftPct}%</td>
+      </tr>
+    </tbody>
+  </table>
+  `;
+  
+  boxscoreElement.innerHTML = html;
+  
+  // Add row selection functionality
+  const rows = document.querySelectorAll('.stats-table tbody tr:not(.dnp-row):not(.totals-row)');
+  rows.forEach(row => {
+    row.addEventListener('click', function() {
+      rows.forEach(r => r.classList.remove('selected'));
+      this.classList.add('selected');
+    });
+  });
+  
+  // Add click handlers for sorting
+  document.querySelectorAll('.stats-table th[data-key]').forEach(header => {
+    header.addEventListener('click', () => {
+      const key = header.getAttribute('data-key');
+      let direction = 'desc'; // Default to descending first
+      
+      // Toggle if clicking same column
+      if (sortConfig.key === key) {
+        direction = sortConfig.direction === 'desc' ? 'asc' : 'desc';
+      }
+      
+      sortConfig = { key, direction };
+      renderBoxscore(round);
+    });
+  });
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', async function() {
+  // Set up game list click handlers
+  document.querySelectorAll('.game-list li').forEach(item => {
+    item.addEventListener('click', async function() {
+      if (!this.classList.contains('future')) {
+        const round = parseInt(this.getAttribute('data-round'));
+        currentGame = round;
+        
+        // Update selected game in nav
+        document.querySelectorAll('.game-list li').forEach(game => {
+          game.classList.remove('current');
+        });
+        this.classList.add('current');
+        
+        await renderBoxscore(round);
+        document.getElementById('boxscore').scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  });
+  
+  // Load initial boxscore
+  await renderBoxscore(currentGame);
+});
+</script>
+</body>
+</html>
